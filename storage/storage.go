@@ -35,7 +35,7 @@ func New() *Storage {
 
 	subFolderPath, err := env.GetString("GOOGLE_SUBFOLDER_PATH")
 	if err != nil {
-		panic(err)
+		subFolderPath = ""
 	}
 
 	ctx := context.Background()
