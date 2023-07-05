@@ -65,6 +65,14 @@ func Brand() {
 			},
 		},
 		{
+			"$match": bson.M{
+				"brandId": bson.M{
+					"$exists": true,
+					"$ne": nil,
+				},
+			},
+		},
+		{
 			"$out": "results",
 		},
 	}
