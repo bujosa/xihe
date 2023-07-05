@@ -9,7 +9,11 @@ func main() {
 
 	// Execute the aggregation pipeline.
 	transformation.Brand()
-    transformation.BrandToModel()
+    transformation.BrandToModel("Lexus", " ", "-")
+    transformation.BrandToModel("70 ANIVERSARIO", "70 ANIVERSARIO", "")
+    transformation.BrandToModel("75 ANIVERSARIO", "75 ANIVERSARIO", "")
+    transformation.BrandToModel("ANIVERSARIO", "ANIVERSARIO", "")
+    transformation.BrandToModel("Aniversario", "Aniversario", "")
     transformation.Model()
     transformation.Trim()
 

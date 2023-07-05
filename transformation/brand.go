@@ -94,8 +94,9 @@ func Brand() {
 	}
 }
 
-func BrandToModel() {
-	print("Starting brand to model transformation...\n")
+func BrandToModel(regex string, find string, replacement string) {
+	print("Starting brand to model transformation... with regex: " + regex + " find: " + find + " replacement: " + replacement + "\n")
+
 
 	dbUri, err := env.GetString(DB_URL_ENV_KEY)
 	if err != nil {
@@ -119,7 +120,7 @@ func BrandToModel() {
 		{
 			"$match": bson.M{
 				"title": bson.M{
-					"$regex": "Lexus",
+					"$regex": regex,
 				},
 			},
 		},
@@ -128,8 +129,8 @@ func BrandToModel() {
 				"model": bson.M{
 					"$replaceOne": bson.M{
 									"input": "$model",
-									"find": " ",
-									"replacement": "",
+									"find": find,
+									"replacement": replacement,
 					},
 				},
 			},
@@ -143,6 +144,7 @@ func BrandToModel() {
 			},
 		},
 	}
+
 	// Execute the aggregation.
 	cursor, err := coll.Aggregate(context.TODO(), pipeline)
 	if err != nil {
