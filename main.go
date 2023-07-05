@@ -11,6 +11,7 @@ func main() {
 	transformation.Brand()
     transformation.BrandToModel()
     transformation.Model()
+    transformation.Trim()
 
     // // Set up the client and connect to the database.
     // client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(

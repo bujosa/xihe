@@ -9,11 +9,10 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-const MODEL_SOURCE = "models"
-const PROCESSED_DATA = "cars_processed"
+const TRIM_SOURCE = "trimlevels"
 
-func Model() {
-	print("Starting model transformation... \n")
+func Trim() {
+	print("Starting trim transformation... \n")
 
 	dbUri, err := env.GetString(DB_URL_ENV_KEY)
 	if err != nil {
@@ -35,43 +34,72 @@ func Model() {
 	// Define a filter that matches all documents in the collection.
 	pipeline := []bson.M{
 		{
-			"$addFields": bson.M{
-				"model": bson.M{
-					"$concat": []interface{}{
-						"$brand.slug",
-						"-",
-						bson.M{
-							"$replaceAll": bson.M{
-									"input": "$model",
-									"find": " ",
-									"replacement": "-",
-							},
-						},
-					},
-				},
+			"$match": bson.M{
+				"modelMatched": true,
 			},
 		},
 		{
 			"$lookup": bson.M{
-				"from": MODEL_SOURCE,
-				"localField": "model",
-				"foreignField": "slug",
-				"as": "model",
+				"from": TRIM_SOURCE,
+				"let": bson.M{
+					"modelId": "$model._id",
+					"year": "$year",
+				},
+				"pipeline": []bson.M{
+					{
+						"$match": bson.M{
+							"$expr": bson.M{
+								"$and": []bson.M{
+									{
+										"$eq": []interface{}{
+											"$carModel",
+											"$$modelId",
+										},
+									},
+									{
+										"$eq": []interface{}{
+											"$year",
+											"$$year",
+										},
+									},
+								},
+							},
+						},
+					},
+					{
+						"$limit": 1,
+					},
+					{
+						"$project": bson.M{
+							"_id": 1,
+							"id": 1,
+							"slug": 1,
+							"name": 1,
+							"carModel": 1,
+							"bodyStyle": 1,
+							"driveTrain": 1,
+							"fuelType": 1,
+							"transmission": 1,
+							"features": 1,
+						},
+					},
+				},
+				"as": "trim",
 			},
 		},
 		{
 			"$unwind": bson.M{
-				"path": "$model",
+				"path": "$trim",
 				"preserveNullAndEmptyArrays": true,
 			},
 		},
 		{
 			"$addFields": bson.M{
-				"modelMatched": bson.M{
+				"trimMatched": bson.M{
 					"$cond": bson.M{
 						"if": bson.M{
 							"$ifNull": []interface{}{
-								"$model",
+								"$trim",
 								false,
 							},
 						},
@@ -79,10 +107,16 @@ func Model() {
 						"else": false,
 					},
 				},
-				"trimMatched": false,
 			},
 		},
-		{"$out": PROCESSED_DATA},
+		{ 
+			"$merge": bson.M{
+				"into": PROCESSED_DATA,
+				"on": "_id",
+				"whenMatched": "merge",
+				"whenNotMatched": "insert",
+			},
+		},
 	}
 
 	// Execute the aggregation.

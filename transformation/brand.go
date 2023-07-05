@@ -15,6 +15,8 @@ const BRAND_SOURCE = "brands"
 const DB_URL_ENV_KEY = "SUPER_CARROS_DATABASE_URL"
 
 func Brand() {
+	print("Starting brand transformation...\n")
+
 	dbUri, err := env.GetString(DB_URL_ENV_KEY)
 	if err != nil {
 		panic(err)
@@ -93,6 +95,8 @@ func Brand() {
 }
 
 func BrandToModel() {
+	print("Starting brand to model transformation...\n")
+
 	dbUri, err := env.GetString(DB_URL_ENV_KEY)
 	if err != nil {
 		panic(err)
