@@ -2,7 +2,10 @@ package env
 
 import (
 	"fmt"
+	"log"
 	"os"
+
+	"github.com/joho/godotenv"
 )
 
 type ErrEnvNotSet struct {
@@ -13,12 +16,21 @@ func (err *ErrEnvNotSet) Error() string {
 	return fmt.Sprintf("Environment variable with key %s was not set", err.key)
 }
 
-// GetString reads a string value from the environment variables.
+// Get string from environment variable
 func GetString(key string) (string, error) {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
 
-	value, ok := os.LookupEnv(key)
+	// print all enviroments
+	for _, element := range os.Environ() {
+		print(element)
+	}
 
-	if !ok {
+	value := os.Getenv(key)
+
+	if value == "" {
 		return value, &ErrEnvNotSet{key: key}
 	}
 
