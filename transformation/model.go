@@ -2,7 +2,6 @@ package transformation
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/bujosa/xihe/env"
 	"go.mongodb.org/mongo-driver/bson"
@@ -65,15 +64,24 @@ func Model() {
 			},
 		},
 		{
-			"$match": bson.M{
-				"model": bson.M{
-					"$exists": true,
-					"$ne": nil,
+			"$addFields": bson.M{
+				"modelMatched": bson.M{
+					"$cond": bson.M{
+						"if": bson.M{
+							"$ifNull": []interface{}{
+								"$model",
+								false,
+							},
+						},
+						"then": true,
+						"else": false,
+					},
 				},
 			},
 		},
 		{"$out": PROCESSED_DATA},
 	}
+
 	// Execute the aggregation.
 	cursor, err := coll.Aggregate(context.TODO(), pipeline)
 	if err != nil {
@@ -86,7 +94,5 @@ func Model() {
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println(doc)
-		fmt.Println("Operation successful.")
 	}
 }

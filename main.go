@@ -8,7 +8,8 @@ import (
 func main() {
 
 	// Execute the aggregation pipeline.
-	// transformation.Brand()
+	transformation.Brand()
+    transformation.BrandToModel()
     transformation.Model()
 
     // // Set up the client and connect to the database.

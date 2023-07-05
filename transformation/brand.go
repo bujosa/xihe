@@ -110,12 +110,12 @@ func BrandToModel() {
 	db := client.Database(DATABASE)
 	coll := db.Collection(PROCESSED_DATA)
 
-	// Define a filter that matches all documents in the collection.
+	// Define The pipeline.
 	pipeline := []bson.M{
 		{
 			"$match": bson.M{
 				"title": bson.M{
-					"$regex": "lexus lx",
+					"$regex": "Lexus",
 				},
 			},
 		},
@@ -125,7 +125,7 @@ func BrandToModel() {
 					"$replaceOne": bson.M{
 									"input": "$model",
 									"find": " ",
-									"replacement": "-",
+									"replacement": "",
 					},
 				},
 			},
