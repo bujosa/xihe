@@ -22,12 +22,7 @@ func GetString(key string) (string, error) {
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
-
-	// print all enviroments
-	for _, element := range os.Environ() {
-		print(element)
-	}
-
+	
 	value := os.Getenv(key)
 
 	if value == "" {
