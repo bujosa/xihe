@@ -13,7 +13,8 @@ func TestSlug(t *testing.T) {
     }
 
     for _, test := range tests {
-        result := Slug(test.input)
+        convert := []string{test.input}
+        result := Slug(convert)
         if result != test.output {
             t.Errorf("Slug(%q) = %q, expected %q", test.input, result, test.output)
         }
