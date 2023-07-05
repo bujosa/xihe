@@ -2,7 +2,6 @@ package transformation
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/bujosa/xihe/env"
 	"go.mongodb.org/mongo-driver/bson"
@@ -12,12 +11,11 @@ import (
 
 const DATABASE = "supercarros"
 const COLLECTION = "cars"
-const SOURCE = "brands"
+const BRAND_SOURCE = "brands"
 const DB_URL_ENV_KEY = "SUPER_CARROS_DATABASE_URL"
 
 func Brand() {
 	dbUri, err := env.GetString(DB_URL_ENV_KEY)
-	print(dbUri)
 	if err != nil {
 		panic(err)
 	}
@@ -38,42 +36,45 @@ func Brand() {
 	pipeline := []bson.M{
 		{
 			"$addFields": bson.M{
-				"brandSlug": bson.M{
+				"brand": bson.M{
 					"$toLower": "$brand",
+				},
+				"model": bson.M{
+					"$toLower": "$model",
 				},
 			},
 		},
 		{
 			"$lookup": bson.M{
-				"from": SOURCE,
-				"localField": "brandSlug",
+				"from": BRAND_SOURCE,
+				"localField": "brand",
 				"foreignField": "slug",
-				"as": "result",
+				"as": "brand",
 			},
 		},
 		{
 			"$unwind": bson.M{
-				"path": "$result",
+				"path": "$brand",
 				"preserveNullAndEmptyArrays": true,
 			},
 		},
 		{
 			"$addFields": bson.M{
-				"brandId": bson.M{
-					"$ifNull": []interface{}{"$result._id", nil},
+				"brand": bson.M{
+					"$ifNull": []interface{}{"$brand", nil},
 				},
 			},
 		},
 		{
 			"$match": bson.M{
-				"brandId": bson.M{
+				"brand": bson.M{
 					"$exists": true,
 					"$ne": nil,
 				},
 			},
 		},
 		{
-			"$out": "results",
+			"$out": PROCESSED_DATA,
 		},
 	}
 	// Execute the aggregation.
@@ -88,6 +89,67 @@ func Brand() {
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println("Operation successful.")
+	}
+}
+
+func BrandToModel() {
+	dbUri, err := env.GetString(DB_URL_ENV_KEY)
+	if err != nil {
+		panic(err)
+	}
+
+	// Set up the client and connect to the database.
+	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(
+		dbUri,
+	))
+	if err != nil {
+		panic(err)
+	}
+
+	// Get the database and collection.
+	db := client.Database(DATABASE)
+	coll := db.Collection(PROCESSED_DATA)
+
+	// Define a filter that matches all documents in the collection.
+	pipeline := []bson.M{
+		{
+			"$match": bson.M{
+				"title": bson.M{
+					"$regex": "lexus lx",
+				},
+			},
+		},
+		{
+			"$addFields": bson.M{
+				"model": bson.M{
+					"$replaceOne": bson.M{
+									"input": "$model",
+									"find": " ",
+									"replacement": "-",
+					},
+				},
+			},
+		},
+		{
+			"$merge": bson.M{
+				"into": PROCESSED_DATA,
+				"on": "_id",
+				"whenMatched": "replace",
+				"whenNotMatched": "insert",
+			},
+		},
+	}
+	// Execute the aggregation.
+	cursor, err := coll.Aggregate(context.TODO(), pipeline)
+	if err != nil {
+		panic(err)
+	}
+
+	for cursor.Next(context.TODO()) {
+		var doc bson.D
+		err := cursor.Decode(&doc)
+		if err != nil {
+			panic(err)
+		}
 	}
 }

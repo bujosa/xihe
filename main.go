@@ -8,7 +8,9 @@ import (
 func main() {
 
 	// Execute the aggregation pipeline.
-	transformation.Brand()
+	// transformation.Brand()
+    transformation.Model()
+
     // // Set up the client and connect to the database.
     // client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(
 	// 	"mongodb://localhost:27017",
