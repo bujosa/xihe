@@ -80,6 +80,7 @@ func Model() {
 					},
 				},
 				"trimMatched": false,
+				"uploaded": false,
 			},
 		},
 		{"$out": PROCESSED_DATA},
