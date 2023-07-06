@@ -6,4 +6,5 @@ func Run() {
 	BrandToModel("Lexus", " ", "-")
 	Model()
 	Trim()
+	Color()
 }

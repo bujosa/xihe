@@ -6,7 +6,7 @@ func main() {
 
 	// Data Transformation Pipeline
 	transformation.Run()
-	
+
 	// // Set up the client and connect to the database.
 	// client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(
 	// 	"mongodb://localhost:27017",

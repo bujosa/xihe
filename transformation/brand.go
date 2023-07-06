@@ -21,6 +21,54 @@ func Brand() {
 				"model": bson.M{
 					"$toLower": "$model",
 				},
+				"interiorColor":  bson.M{
+					"$arrayElemAt": []interface{}{
+						bson.M{
+							"$split": []interface{}{
+								"$interiorColor",
+								"/",
+							},
+						},
+						0,
+					},	
+				},
+				"exteriorColor":  bson.M{
+					"$arrayElemAt": []interface{}{
+						bson.M{
+							"$split": []interface{}{
+								"$exteriorColor",
+								"/",
+							},
+						},
+						0,
+					},		
+				},
+			},
+		},
+		{
+			"$addFields": bson.M{
+				"interiorColor":  bson.M{
+					"$arrayElemAt": []interface{}{
+						bson.M{
+							"$split": []interface{}{
+								"$interiorColor",
+								" ",
+							},
+						},
+						0,
+					},	
+				},
+				"exteriorColor":  bson.M{
+					"$arrayElemAt": []interface{}{
+						bson.M{
+							"$split": []interface{}{
+								"$exteriorColor",
+								" ",
+							},
+						},
+						0,
+					},		
+				},
 			},
 		},
 		{
