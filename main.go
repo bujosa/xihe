@@ -1,68 +1,61 @@
 package main
 
-import (
-	"github.com/bujosa/xihe/transformation"
-)
-
+import "github.com/bujosa/xihe/transformation"
 
 func main() {
 
-	// Execute the aggregation pipeline.
+	// Data Transformation Pipeline
 	transformation.Brand()
-    transformation.BrandToModel("Lexus", " ", "-")
-    transformation.BrandToModel("70 ANIVERSARIO", "70 ANIVERSARIO", "")
-    transformation.BrandToModel("75 ANIVERSARIO", "75 ANIVERSARIO", "")
-    transformation.BrandToModel("ANIVERSARIO", "ANIVERSARIO", "")
-    transformation.BrandToModel("Aniversario", "Aniversario", "")
-    transformation.Model()
-    transformation.Trim()
+	transformation.BrandToModel("Lexus", " ", "-")
+	transformation.Model()
+	transformation.Trim()
 
-    // // Set up the client and connect to the database.
-    // client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(
+	// // Set up the client and connect to the database.
+	// client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(
 	// 	"mongodb://localhost:27017",
 	// ))
-    // if err != nil {
-    //     panic(err)
-    // }
+	// if err != nil {
+	//     panic(err)
+	// }
 
-    // // Get the database and collection.
-    // db := client.Database("supercarros")
-    // coll := db.Collection("cars")
+	// // Get the database and collection.
+	// db := client.Database("supercarros")
+	// coll := db.Collection("cars")
 
-    // // Define a filter that matches all documents in the collection.
-    //    pipeline := []bson.M{
-    //     {
-    //         "$match": bson.M{
-    //             "year": 2023,
-    //         },
-    //     },
-    //     {
-    //         "$limit": 10,
-    //     },
+	// // Define a filter that matches all documents in the collection.
+	//    pipeline := []bson.M{
+	//     {
+	//         "$match": bson.M{
+	//             "year": 2023,
+	//         },
+	//     },
+	//     {
+	//         "$limit": 10,
+	//     },
 	// 	{
 	// 		"$project": bson.M{
 	// 			"year": 1,
 	// 			"title": 1,
 	// 		},
 	// 	},
-    // }
-    // // Find all documents in the collection.
-    // cursor, err := coll.Aggregate(context.TODO(), pipeline)
-    // if err != nil {
-    //     panic(err)
-    // }
+	// }
+	// // Find all documents in the collection.
+	// cursor, err := coll.Aggregate(context.TODO(), pipeline)
+	// if err != nil {
+	//     panic(err)
+	// }
 
 	// cars := []Car{}
 
-    // // Iterate through the cursor and print the documents.
-    // for cursor.Next(context.TODO()) {
-    //     var doc Car
-    //     err := cursor.Decode(&doc)
-    //     if err != nil {
-    //         panic(err)
-    //     }
+	// // Iterate through the cursor and print the documents.
+	// for cursor.Next(context.TODO()) {
+	//     var doc Car
+	//     err := cursor.Decode(&doc)
+	//     if err != nil {
+	//         panic(err)
+	//     }
 	// 	cars = append(cars, doc)
-    // }
+	// }
 
 	// // Iterate Cars
 	// for _, car := range cars {

@@ -114,7 +114,7 @@ func Trim() {
 				"into": PROCESSED_DATA,
 				"on": "_id",
 				"whenMatched": "merge",
-				"whenNotMatched": "insert",
+				"whenNotMatched": "fail",
 			},
 		},
 	}

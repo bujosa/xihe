@@ -36,7 +36,7 @@ func Model() {
 	pipeline := []bson.M{
 		{
 			"$addFields": bson.M{
-				"model": bson.M{
+				"modelSlug": bson.M{
 					"$concat": []interface{}{
 						"$brand.slug",
 						"-",
@@ -54,7 +54,7 @@ func Model() {
 		{
 			"$lookup": bson.M{
 				"from": MODEL_SOURCE,
-				"localField": "model",
+				"localField": "modelSlug",
 				"foreignField": "slug",
 				"as": "model",
 			},

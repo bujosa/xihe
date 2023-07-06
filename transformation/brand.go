@@ -140,7 +140,7 @@ func BrandToModel(regex string, find string, replacement string) {
 				"into": PROCESSED_DATA,
 				"on": "_id",
 				"whenMatched": "replace",
-				"whenNotMatched": "insert",
+				"whenNotMatched": "fail",
 			},
 		},
 	}
