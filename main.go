@@ -5,11 +5,8 @@ import "github.com/bujosa/xihe/transformation"
 func main() {
 
 	// Data Transformation Pipeline
-	transformation.Brand()
-	transformation.BrandToModel("Lexus", " ", "-")
-	transformation.Model()
-	transformation.Trim()
-
+	transformation.Run()
+	
 	// // Set up the client and connect to the database.
 	// client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(
 	// 	"mongodb://localhost:27017",
