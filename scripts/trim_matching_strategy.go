@@ -3,6 +3,8 @@ package scripts
 import (
 	"log"
 	"os"
+
+	"github.com/bujosa/xihe/database"
 )
 
 func TrimMatchingStrategy() {
@@ -18,5 +20,7 @@ func TrimMatchingStrategy() {
 	log.SetPrefix("[INFO] ")
 	log.Println("Starting Trim Matching Strategy...")
 
-	
+	cars := database.GetCars()
+
+	print(len(cars))
 }

@@ -60,8 +60,8 @@ func Model() {
 				"uploaded": false,
 			},
 		},
-		{"$out": utils.CARS_PROCESSED},
+		{"$out": utils.CARS_PROCESSED_COLLECTION},
 	}
 
-	BaseTransformation(pipeline, utils.CARS_PROCESSED, utils.DATABASE)
+	BaseTransformation(pipeline, utils.CARS_PROCESSED_COLLECTION, utils.DATABASE)
 }
