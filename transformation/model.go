@@ -6,7 +6,6 @@ import (
 )
 
 const MODEL_SOURCE = "models"
-const PROCESSED_DATA = "cars_processed"
 
 func Model() {
 	print("Starting model transformation... \n")
@@ -61,8 +60,8 @@ func Model() {
 				"uploaded": false,
 			},
 		},
-		{"$out": PROCESSED_DATA},
+		{"$out": utils.CARS_PROCESSED},
 	}
 
-	BaseTransformation(pipeline, PROCESSED_DATA, utils.DATABASE)
+	BaseTransformation(pipeline, utils.CARS_PROCESSED, utils.DATABASE)
 }

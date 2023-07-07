@@ -129,7 +129,7 @@ func Color() {
 		},
 		{ 
 			"$merge": bson.M{
-				"into": PROCESSED_DATA,
+				"into": utils.CARS_PROCESSED,
 				"on": "_id",
 				"whenMatched": "merge",
 				"whenNotMatched": "fail",
@@ -137,5 +137,5 @@ func Color() {
 		},
 	}
 
-	BaseTransformation(pipeline, PROCESSED_DATA, utils.DATABASE)
+	BaseTransformation(pipeline, utils.CARS_PROCESSED, utils.DATABASE)
 }

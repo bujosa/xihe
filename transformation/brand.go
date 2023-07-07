@@ -101,7 +101,7 @@ func Brand() {
 			},
 		},
 		{
-			"$out": PROCESSED_DATA,
+			"$out": utils.CARS_PROCESSED,
 		},
 	}
 	BaseTransformation(pipeline, COLLECTION, utils.DATABASE)
@@ -131,7 +131,7 @@ func BrandToModel(regex string, find string, replacement string) {
 		},
 		{
 			"$merge": bson.M{
-				"into": PROCESSED_DATA,
+				"into": utils.CARS_PROCESSED,
 				"on": "_id",
 				"whenMatched": "replace",
 				"whenNotMatched": "fail",
@@ -139,5 +139,5 @@ func BrandToModel(regex string, find string, replacement string) {
 		},
 	}
 
-	BaseTransformation(pipeline, PROCESSED_DATA, utils.DATABASE)
+	BaseTransformation(pipeline, utils.CARS_PROCESSED, utils.DATABASE)
 }
