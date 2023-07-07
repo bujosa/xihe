@@ -1,13 +1,12 @@
 package transformation
 
 import (
+	"github.com/bujosa/xihe/utils"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-const DATABASE = "supercarros"
 const COLLECTION = "cars"
 const BRAND_SOURCE = "brands"
-const DB_URL_ENV_KEY = "SUPER_CARROS_DATABASE_URL"
 
 func Brand() {
 	print("Starting brand transformation...\n")
@@ -105,7 +104,7 @@ func Brand() {
 			"$out": PROCESSED_DATA,
 		},
 	}
-	BaseTransformation(pipeline, COLLECTION, DATABASE)
+	BaseTransformation(pipeline, COLLECTION, utils.DATABASE)
 }
 
 func BrandToModel(regex string, find string, replacement string) {
@@ -140,5 +139,5 @@ func BrandToModel(regex string, find string, replacement string) {
 		},
 	}
 
-	BaseTransformation(pipeline, PROCESSED_DATA, DATABASE)
+	BaseTransformation(pipeline, PROCESSED_DATA, utils.DATABASE)
 }

@@ -1,6 +1,7 @@
 package transformation
 
 import (
+	"github.com/bujosa/xihe/utils"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -63,5 +64,5 @@ func Model() {
 		{"$out": PROCESSED_DATA},
 	}
 
-	BaseTransformation(pipeline, PROCESSED_DATA, DATABASE)
+	BaseTransformation(pipeline, PROCESSED_DATA, utils.DATABASE)
 }

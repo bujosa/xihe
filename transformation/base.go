@@ -4,17 +4,20 @@ import (
 	"context"
 
 	"github.com/bujosa/xihe/env"
+	"github.com/bujosa/xihe/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+
+
 func BaseTransformation(pipeline []bson.M, collection string, database string) {
-	dbUri, err := env.GetString(DB_URL_ENV_KEY)
+	dbUri, err := env.GetString(utils.DB_URL_ENV_KEY)
 	if err != nil {
 		panic(err)
 	}
-
+	
 	// Set up the client and connect to the database.
 	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(
 		dbUri,

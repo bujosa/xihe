@@ -1,6 +1,7 @@
 package transformation
 
 import (
+	"github.com/bujosa/xihe/utils"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -96,5 +97,5 @@ func Trim() {
 		},
 	}
 
-	BaseTransformation(pipeline, PROCESSED_DATA, DATABASE)
+	BaseTransformation(pipeline, PROCESSED_DATA, utils.DATABASE)
 }

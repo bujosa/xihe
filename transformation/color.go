@@ -1,6 +1,7 @@
 package transformation
 
 import (
+	"github.com/bujosa/xihe/utils"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -136,5 +137,5 @@ func Color() {
 		},
 	}
 
-	BaseTransformation(pipeline, PROCESSED_DATA, DATABASE)
+	BaseTransformation(pipeline, PROCESSED_DATA, utils.DATABASE)
 }
