@@ -94,3 +94,31 @@ func GetCars() []Car {
 
 	return cars
 }
+
+
+func UpdateCar(id string, uploaded bool, status string, curboId string) {
+	log.Println("Updating car: " + id)
+	dbUri, err := env.GetString(utils.DB_URL_ENV_KEY)
+	if err != nil {
+		panic(err)
+	}
+
+	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(
+		dbUri,
+	))
+	if err != nil {
+		panic(err)
+	}
+
+	db := client.Database(utils.DATABASE)
+	coll := db.Collection(utils.CARS_PROCESSED_COLLECTION)
+
+	filter := bson.M{"_id": id}
+	update := bson.M{"$set": bson.M{"uploaded": uploaded, "status": status, "curboId": curboId}}
+
+	_, err = coll.UpdateOne(context.Background(), filter, update)
+	if err != nil {
+		log.Print("Error updating car: " + id)
+	}
+	log.Println("Updated car: " + id)
+}
