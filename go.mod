@@ -4,8 +4,8 @@ go 1.19
 
 require (
 	cloud.google.com/go/storage v1.31.0
-	go.mongodb.org/mongo-driver v1.12.0
 	github.com/joho/godotenv v1.5.1
+	go.mongodb.org/mongo-driver v1.12.0
 )
 
 require (
@@ -21,6 +21,7 @@ require (
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.2.3 // indirect
 	github.com/googleapis/gax-go/v2 v2.11.0 // indirect
+	github.com/graphql-go/graphql v0.8.1 // indirect
 	github.com/klauspost/compress v1.13.6 // indirect
 	github.com/montanaflynn/stats v0.0.0-20171201202039-1bf9dbcd8cbe // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
