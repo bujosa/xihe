@@ -10,3 +10,10 @@ const (
 func (f MatchingStrategy) String() string {
 	return string(f)
 }
+
+type StatusRequest string
+
+const (
+	Success StatusRequest = "success"
+	Failed  StatusRequest = "failed"
+)
