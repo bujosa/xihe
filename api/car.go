@@ -1,9 +1,9 @@
-package grapqhql
+package api
 
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/bujosa/xihe/env"
@@ -43,7 +43,9 @@ type CreateCarResponse struct {
 	} `json:"data"`
 }
 
-func CreateCar(createCarInput CreateCarInput) (Car, utils.StatusRequest) {
+func CreateCar(createCarInput CreateCarInput, id string) (Car, utils.StatusRequest) {
+	log.Println("Creating car... with ID: " + id)
+
 	url, err:= env.GetString("PRODUCTION_API_URL")
 	if err != nil {
 		panic(err)
@@ -70,13 +72,13 @@ func CreateCar(createCarInput CreateCarInput) (Car, utils.StatusRequest) {
 
 	requestBody, err := json.Marshal(request)
 	if err != nil {
-		fmt.Printf("Error marshalling request body %s\n", err)
+		log.Printf("Error marshalling request body %s\n", err)
 		return Car{}, utils.StatusRequest("failed")
 	}
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
 	if err != nil {
-		fmt.Printf("Error creating HTTP request %s\n", err)
+		log.Printf("Error creating HTTP request %s\n", err)
 		return Car{}, utils.StatusRequest("failed")
 	}
 
@@ -85,7 +87,7 @@ func CreateCar(createCarInput CreateCarInput) (Car, utils.StatusRequest) {
 	client := &http.Client{}
 	response, err := client.Do(req)
 	if err != nil {
-		fmt.Printf("Error sending HTTP request %s\n", err)
+		log.Printf("Error sending HTTP request %s\n", err)
 		return Car{}, utils.StatusRequest("failed")
 	}
 	defer response.Body.Close()
@@ -93,12 +95,12 @@ func CreateCar(createCarInput CreateCarInput) (Car, utils.StatusRequest) {
 	var responseData CreateCarResponse
 	err = json.NewDecoder(response.Body).Decode(&responseData)
 	if err != nil {
-		fmt.Printf("Error decoding response body %s\n", err)
+		log.Printf("Error decoding response body %s\n", err)
 		return Car{}, utils.StatusRequest("failed")
 	}
 
 	if response.StatusCode != 200 {
-		fmt.Printf("Error status code %d\n", response.StatusCode)
+		log.Printf("Error status code %d\n", response.StatusCode)
 		return Car{}, utils.StatusRequest("failed")
 	} else {
 		return responseData.Data.CreateCar, utils.StatusRequest("success")
