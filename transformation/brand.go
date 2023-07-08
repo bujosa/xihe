@@ -43,6 +43,7 @@ func Brand() {
 					},		
 				},
 				"licensePlate": "$_id",
+				"picturesUploaded": false,
 			},
 		},
 		{
