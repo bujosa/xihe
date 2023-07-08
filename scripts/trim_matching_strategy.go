@@ -2,24 +2,16 @@ package scripts
 
 import (
 	"log"
-	"os"
+	"time"
 
 	"github.com/bujosa/xihe/api"
 	"github.com/bujosa/xihe/database"
 	"github.com/bujosa/xihe/env"
+	"github.com/bujosa/xihe/utils"
 )
 
 func TrimMatchingStrategy() {
-	// Add register file
-	logFile, err := os.OpenFile("log.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		panic(err)
-	}
-	defer logFile.Close()
-
-	log.SetOutput(logFile)
-
-	log.SetPrefix("[INFO] ")
+	utils.SetLogFile("trim_matching_strategy.log")
 	log.Println("Starting Trim Matching Strategy...")
 
 	cars := database.GetCars()
@@ -52,6 +44,7 @@ func TrimMatchingStrategy() {
 
 		if !car.PicturesUploaded {
 			UploadPictures(car, &createCatInput)
+			utils.SetLogFile("trim_matching_strategy.log")
 		} else {
 			log.Println("Pictures already uploaded for car: " + car.Id)
 		}
@@ -66,8 +59,7 @@ func TrimMatchingStrategy() {
 		}
 
 		if status != "success" {
-			log.SetPrefix("[ERROR] ")
-			log.Println("creating car: " + car.Id)
+			log.Println("Error creating car: " + car.Id)
 			updateCarInfo.NewId = ""
 			database.UpdateCar(updateCarInfo)
 			continue
@@ -75,5 +67,7 @@ func TrimMatchingStrategy() {
 
 		updateCarInfo.NewId = carUploaded.Id
 		database.UpdateCar(updateCarInfo)
+
+		time.Sleep(30 * time.Second)
 	}
 }

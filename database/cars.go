@@ -110,7 +110,6 @@ func GetCars() []Car {
 
 
 func UpdateCar(updateCarInfo UpdateCarInfo) {
-	log.SetPrefix("[INFO] ")
 	log.Println("Updating car: " + updateCarInfo.Car.Id)
 
 	dbUri, err := env.GetString(utils.DB_URL_ENV_KEY)
@@ -133,8 +132,7 @@ func UpdateCar(updateCarInfo UpdateCarInfo) {
 
 	_, err = coll.UpdateOne(context.Background(), filter, update)
 	if err != nil {
-		log.SetPrefix("[ERROR] ")
-		log.Print("updating car: " + updateCarInfo.Car.Id)
+		log.Print("Error updating car: " + updateCarInfo.Car.Id)
 	}
 	log.Println("Updated car: " + updateCarInfo.Car.Id)
 }

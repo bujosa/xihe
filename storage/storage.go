@@ -4,11 +4,13 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"strings"
 
 	"cloud.google.com/go/storage"
 	"github.com/bujosa/xihe/env"
+	"github.com/bujosa/xihe/utils"
 )
 
 type Storage struct {
@@ -54,9 +56,12 @@ func New() *Storage {
 }
 
 func (s Storage) Upload(url string) (string, error) {
+	utils.SetLogFile("upload_pictures.log.txt")
+	log.Print("Upload Picture with url: ", url)
+
 	resp, err := http.Get(url)
 	if err != nil {
-		fmt.Println(err)
+		log.Println("Error downloading picture: " + url)
 		return "", err
 	}
 	defer resp.Body.Close()
@@ -70,12 +75,12 @@ func (s Storage) Upload(url string) (string, error) {
 	wc := object.NewWriter(s.context)
 
 	if _, err = io.Copy(wc, resp.Body); err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return "", err
 	}
 
 	if err := wc.Close(); err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return "", err
 	}
 
