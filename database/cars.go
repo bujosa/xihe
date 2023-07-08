@@ -19,12 +19,24 @@ type Car struct {
 	InteriorColor string `bson:"interiorColor"`
 	ExteriorColor string `bson:"exteriorColor"`
 	Mileage int `bson:"mileage"`
-	LincesePlate string `bson:"licensePlate"`
+	LicensePlate string `bson:"licensePlate"`
 	Pictures []string `bson:"pictures"`
 	MainPicture string `bson:"mainPicture"`
 	Currency string `bson:"currency"`
 	Price int `bson:"price"`
 	Url string `bson:"url"`
+	Dealer string `bson:"dealer"`
+	PicturesUploaded bool `bson:"picturesUploaded"`
+
+}
+
+type UpdateCarInfo struct {
+	Car Car `bson:"car"`
+	MatchingStrategy utils.MatchingStrategy `bson:"matchingStrategy"`
+	Status utils.StatusRequest `bson:"status"`
+	PicturesUploaded bool `bson:"picturesUploaded"`
+	CarUploaded bool `bson:"carUploaded"`
+	NewId string `bson:"newId"`
 }
 
 func GetCars() []Car {
@@ -71,6 +83,7 @@ func GetCars() []Car {
 				"price": 1,
 				"url": 1,
 				"dealer": 1,
+				"picturesUploaded": 1,
 			},
 		},
 	}
@@ -96,8 +109,10 @@ func GetCars() []Car {
 }
 
 
-func UpdateCar(id string, uploaded bool, status string, curboId string) {
-	log.Println("Updating car: " + id)
+func UpdateCar(updateCarInfo UpdateCarInfo) {
+	log.SetPrefix("[INFO] ")
+	log.Println("Updating car: " + updateCarInfo.Car.Id)
+
 	dbUri, err := env.GetString(utils.DB_URL_ENV_KEY)
 	if err != nil {
 		panic(err)
@@ -113,12 +128,13 @@ func UpdateCar(id string, uploaded bool, status string, curboId string) {
 	db := client.Database(utils.DATABASE)
 	coll := db.Collection(utils.CARS_PROCESSED_COLLECTION)
 
-	filter := bson.M{"_id": id}
-	update := bson.M{"$set": bson.M{"uploaded": uploaded, "status": status, "curboId": curboId}}
+	filter := bson.M{"_id": updateCarInfo.Car.Id}
+	update := bson.M{"$set": bson.M{"uploaded": updateCarInfo.CarUploaded, "status": updateCarInfo.Status, "newId": updateCarInfo.NewId, "matchingStrategy": updateCarInfo.MatchingStrategy, "picturesUploaded": updateCarInfo.PicturesUploaded}}
 
 	_, err = coll.UpdateOne(context.Background(), filter, update)
 	if err != nil {
-		log.Print("Error updating car: " + id)
+		log.SetPrefix("[ERROR] ")
+		log.Print("updating car: " + updateCarInfo.Car.Id)
 	}
-	log.Println("Updated car: " + id)
+	log.Println("Updated car: " + updateCarInfo.Car.Id)
 }
