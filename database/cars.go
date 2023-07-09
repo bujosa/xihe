@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"log"
+	"time"
 
 	"github.com/bujosa/xihe/env"
 	"github.com/bujosa/xihe/utils"
@@ -130,8 +131,14 @@ func UpdateCar(updateCarInfo UpdateCarInfo) {
 	db := client.Database(utils.DATABASE)
 	coll := db.Collection(utils.CARS_PROCESSED_COLLECTION)
 
-	filter := bson.M{"_id": updateCarInfo.Car.Id}
-	update := bson.M{"$set": bson.M{"uploaded": updateCarInfo.CarUploaded, "status": updateCarInfo.Status, "newId": updateCarInfo.NewId, "matchingStrategy": updateCarInfo.MatchingStrategy, "picturesUploaded": updateCarInfo.PicturesUploaded}}
+	objectId, err := utils.ToObjectId(updateCarInfo.Car.Id)
+	if err != nil {
+		log.Println("Error converting id to ObjectId: " + updateCarInfo.Car.Id)
+		return
+	}
+
+	filter := bson.M{"_id": objectId}
+	update := bson.M{"$set": bson.M{"uploaded": updateCarInfo.CarUploaded, "status": updateCarInfo.Status, "newId": updateCarInfo.NewId, "matchingStrategy": updateCarInfo.MatchingStrategy, "picturesUploaded": updateCarInfo.PicturesUploaded, "updatedAt": time.Now().UTC()}}
 
 	_, err = coll.UpdateOne(context.Background(), filter, update)
 	if err != nil {
