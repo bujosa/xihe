@@ -57,7 +57,7 @@ func CreateCar(createCarInput CreateCarInput, id string) (Car, utils.StatusReque
 
 	mutation := `
 		mutation CreateCar($input: CreateCarInput!) {
-			createCar(input: $createCarInput) {
+			createCar(input: $input) {
 				id
 			}
 		}
