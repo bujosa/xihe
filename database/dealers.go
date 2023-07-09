@@ -12,25 +12,25 @@ import (
 )
 
 type Dealer struct {
-	Id    string `bson:"_id"`
-	Name  string `bson:"name"`
-	Slug  string `bson:"slug"`
-	Address string `bson:"address"`
-	Latitude float64 `bson:"latitude"`
-	Longitude float64 `bson:"longitude"`
-	TelephoneNumberSanitized string `bson:"telephoneNumberSanitized"`
-	City string `bson:"city"`
-	Spot string `bson:"spot"`
+	Id                       string  `bson:"_id"`
+	Name                     string  `bson:"name"`
+	Slug                     string  `bson:"slug"`
+	Address                  string  `bson:"address"`
+	Latitude                 float64 `bson:"latitude"`
+	Longitude                float64 `bson:"longitude"`
+	TelephoneNumberSanitized string  `bson:"telephoneNumberSanitized"`
+	City                     string  `bson:"city"`
+	Spot                     string  `bson:"spot"`
+	Uploaded                 bool    `bson:"uploaded"`
+	Dealer                   string  `bson:"dealer"`
 }
 
 type UpdateDealerInfo struct {
-	Dealer Dealer `bson:"dealer"`
-	Status utils.StatusRequest `bson:"status"`
-	Uploaded bool `bson:"uploaded"`
-	NewId string `bson:"newId"`
+	Id  string `bson:"_id"`
+	Set bson.M `bson:"$set"`
 }
 
-func GetDealers() []Car {
+func GetDealers() []Dealer {
 	dbUri, err := env.GetString(utils.DB_URL_ENV_KEY)
 	if err != nil {
 		panic(err)
@@ -44,7 +44,7 @@ func GetDealers() []Car {
 	}
 
 	db := client.Database(utils.DATABASE)
-	coll := db.Collection(utils.CARS_PROCESSED_COLLECTION)
+	coll := db.Collection(utils.DEALERS_COLLECTION)
 
 	pipeline := []bson.M{
 		{
@@ -53,27 +53,21 @@ func GetDealers() []Car {
 			},
 		},
 		{
+			"$limit": 1,
+		},
+		{
 			"$project": bson.M{
-				"year":  1,
-				"title": 1,
-				"trim": bson.M{
-					"$toString": "$trim._id",
-				},
-				"interiorColor": bson.M{
-					"$toString": "$interiorColor._id",
-				},
-				"exteriorColor": bson.M{
-					"$toString": "$exteriorColor._id",
-				},
-				"mileage": 1,
-				"licensePlate": 1,
-				"pictures": 1,
-				"mainPicture": 1,
-				"currency": 1,
-				"price": 1,
-				"url": 1,
-				"dealer": 1,
-				"picturesUploaded": 1,
+				"_id":                      1,
+				"dealer":                   1,
+				"uploaded":                 1,
+				"name":                     1,
+				"slug":                     1,
+				"address":                  1,
+				"latitude":                 1,
+				"longitude":                1,
+				"telephoneNumberSanitized": 1,
+				"city":                     1,
+				"spot":                     1,
 			},
 		},
 	}
@@ -83,24 +77,23 @@ func GetDealers() []Car {
 		panic(err)
 	}
 
-	cars := []Car{}
+	dealers := []Dealer{}
 
 	for cursor.Next(context.TODO()) {
-		var doc Car
+		var doc Dealer
 		err := cursor.Decode(&doc)
 		if err != nil {
 			log.Println(err)
 			panic(err)
 		}
-		cars = append(cars, doc)
+		dealers = append(dealers, doc)
 	}
 
-	return cars
+	return dealers
 }
 
-
-func UpdateCar(updateCarInfo UpdateCarInfo) {
-	log.Println("Updating car: " + updateCarInfo.Car.Id)
+func UpdateDealer(updateDealerInfo UpdateDealerInfo) {
+	log.Println("Updating dealer: " + updateDealerInfo.Id)
 
 	dbUri, err := env.GetString(utils.DB_URL_ENV_KEY)
 	if err != nil {
@@ -115,14 +108,24 @@ func UpdateCar(updateCarInfo UpdateCarInfo) {
 	}
 
 	db := client.Database(utils.DATABASE)
-	coll := db.Collection(utils.CARS_PROCESSED_COLLECTION)
+	coll := db.Collection(utils.DEALERS_COLLECTION)
 
-	filter := bson.M{"_id": updateCarInfo.Car.Id}
-	update := bson.M{"$set": bson.M{"uploaded": updateCarInfo.CarUploaded, "status": updateCarInfo.Status, "newId": updateCarInfo.NewId, "matchingStrategy": updateCarInfo.MatchingStrategy, "picturesUploaded": updateCarInfo.PicturesUploaded}}
+	objectId, err := utils.ToObjectId(updateDealerInfo.Id)
+	if err != nil {
+		log.Println("Error converting id to ObjectId: " + updateDealerInfo.Id)
+		return
+	}
+
+	filter := bson.M{"_id": objectId}
+
+	update := bson.M{
+		"$set": updateDealerInfo.Set,
+	}
 
 	_, err = coll.UpdateOne(context.Background(), filter, update)
 	if err != nil {
-		log.Print("Error updating car: " + updateCarInfo.Car.Id)
+		log.Print("Error updating dealer: " + updateDealerInfo.Id)
 	}
-	log.Println("Updated car: " + updateCarInfo.Car.Id)
+
+	log.Println("Updated dealer: " + updateDealerInfo.Id)
 }
