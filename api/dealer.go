@@ -11,12 +11,12 @@ import (
 )
 
 type CreateDealerInput struct {
-	CurboSpot        string               `json:"curboSpot"`
-	Name    		 string               `json:"name"`
-	Adress   		 string               `json:"adress"`
-	Latitude  		 float64              `json:"latitude"`
-	Longitude 		 float64              `json:"longitude"`
-	City   		 	 string               `json:"city"`
+	Spot      string  `json:"curboSpot"`
+	Name      string  `json:"name"`
+	Adress    string  `json:"adress"`
+	Latitude  float64 `json:"latitude"`
+	Longitude float64 `json:"longitude"`
+	City      string  `json:"city"`
 }
 
 type Dealer struct {
@@ -32,7 +32,7 @@ type CreateDealerResponse struct {
 func CreateDealer(createDealerInput CreateDealerInput, id string) (Dealer, utils.StatusRequest) {
 	log.Println("Creating dealer... with ID: " + id)
 
-	url, err:= env.GetString("PRODUCTION_API_URL")
+	url, err := env.GetString("PRODUCTION_API_URL")
 	if err != nil {
 		panic(err)
 	}
