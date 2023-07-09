@@ -6,6 +6,7 @@ import (
 	"github.com/bujosa/xihe/api"
 	"github.com/bujosa/xihe/database"
 	"github.com/bujosa/xihe/env"
+	"github.com/bujosa/xihe/utils"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -21,13 +22,19 @@ func UploadDealers() {
 
 	// Upload dealers to api
 	for _, dealer := range dealers {
+
+		if dealer.TelephoneNumberSanitized == "" {
+			dealer.TelephoneNumberSanitized = "8090000000"
+		}
+
 		createDealerInput := api.CreateDealerInput{
-			Name:      dealer.Name,
-			Adress:    geoCode + " " + dealer.Address,
-			Latitude:  dealer.Latitude,
-			Longitude: dealer.Longitude,
-			City:      dealer.City,
-			Spot:      dealer.Spot,
+			Name:            dealer.Name,
+			Address:         geoCode + " " + utils.ReplaceNewLine(dealer.Address),
+			Latitude:        dealer.Latitude,
+			Longitude:       dealer.Longitude,
+			City:            dealer.City,
+			Spot:            dealer.Spot,
+			TelephoneNumber: dealer.TelephoneNumberSanitized,
 		}
 
 		newDealer, err := api.CreateDealer(createDealerInput, dealer.Id)

@@ -11,12 +11,13 @@ import (
 )
 
 type CreateDealerInput struct {
-	Spot      string  `json:"curboSpot"`
-	Name      string  `json:"name"`
-	Adress    string  `json:"adress"`
-	Latitude  float64 `json:"latitude"`
-	Longitude float64 `json:"longitude"`
-	City      string  `json:"city"`
+	Spot            string  `json:"curboSpot"`
+	Name            string  `json:"name"`
+	Address         string  `json:"address"`
+	Latitude        float64 `json:"latitude"`
+	Longitude       float64 `json:"longitude"`
+	City            string  `json:"city"`
+	TelephoneNumber string  `json:"telephoneNumber"`
 }
 
 type Dealer struct {
@@ -49,14 +50,12 @@ func CreateDealer(createDealerInput CreateDealerInput, id string) (Dealer, utils
 		}
 	`
 
-	request := GraphqlRequest{
-		Query: mutation,
-		Variables: map[string]interface{}{
+	requestBody, err := json.Marshal(map[string]interface{}{
+		"query": mutation,
+		"variables": map[string]interface{}{
 			"input": createDealerInput,
 		},
-	}
-
-	requestBody, err := json.Marshal(request)
+	})
 	if err != nil {
 		log.Printf("Error marshalling request body %s\n", err)
 		return Dealer{}, utils.StatusRequest("failed")
@@ -68,6 +67,7 @@ func CreateDealer(createDealerInput CreateDealerInput, id string) (Dealer, utils
 		return Dealer{}, utils.StatusRequest("failed")
 	}
 
+	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", "Bearer "+token)
 
 	client := &http.Client{}
@@ -78,7 +78,16 @@ func CreateDealer(createDealerInput CreateDealerInput, id string) (Dealer, utils
 	}
 	defer response.Body.Close()
 
+	// responseReader := response.Body
+	// body, err := ioutil.ReadAll(responseReader)
+	// if err != nil {
+	// 	log.Printf("Error reading response body %s\n", err)
+	// 	return Dealer{}, utils.StatusRequest("failed")
+	// }
+	// log.Println(string(body))
+
 	var responseData CreateDealerResponse
+
 	err = json.NewDecoder(response.Body).Decode(&responseData)
 	if err != nil {
 		log.Printf("Error decoding response body %s\n", err)
@@ -90,6 +99,10 @@ func CreateDealer(createDealerInput CreateDealerInput, id string) (Dealer, utils
 		log.Printf("Error data response %s\n", response.Body)
 		return Dealer{}, utils.StatusRequest("failed")
 	} else {
+		if responseData.Data.CreateDealer.Id == "" {
+			log.Printf("Error creating dealer %s\n", err)
+			return Dealer{}, utils.StatusRequest("failed")
+		}
 		log.Printf("Dealer created with ID: %s\n", responseData.Data.CreateDealer.Id)
 		return responseData.Data.CreateDealer, utils.StatusRequest("success")
 	}
