@@ -1,0 +1,17 @@
+.git
+.env
+bin/
+pkg/
+vendor/
+
+*.exe
+*.exe~
+*.test
+
+.vscode/
+.idea/
+*.iml
+
+*.env
+
+log.txt
