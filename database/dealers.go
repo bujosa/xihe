@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"log"
+	"time"
 
 	"github.com/bujosa/xihe/env"
 	"github.com/bujosa/xihe/utils"
@@ -53,11 +54,7 @@ func GetDealers() []Dealer {
 			},
 		},
 		{
-			"$limit": 1,
-		},
-		{
 			"$project": bson.M{
-				"_id":                      1,
 				"dealer":                   1,
 				"uploaded":                 1,
 				"name":                     1,
@@ -121,6 +118,8 @@ func UpdateDealer(updateDealerInfo UpdateDealerInfo) {
 	update := bson.M{
 		"$set": updateDealerInfo.Set,
 	}
+
+	update["$set"].(bson.M)["updatedAt"] = time.Now().UTC()
 
 	_, err = coll.UpdateOne(context.Background(), filter, update)
 	if err != nil {

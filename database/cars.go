@@ -12,31 +12,30 @@ import (
 )
 
 type Car struct {
-	Id    string `bson:"_id"`
-	Year  int    `bson:"year"`
-	Title string `bson:"title"`
-	Trim string `bson:"trim"`
-	InteriorColor string `bson:"interiorColor"`
-	ExteriorColor string `bson:"exteriorColor"`
-	Mileage int `bson:"mileage"`
-	LicensePlate string `bson:"licensePlate"`
-	Pictures []string `bson:"pictures"`
-	MainPicture string `bson:"mainPicture"`
-	Currency string `bson:"currency"`
-	Price int `bson:"price"`
-	Url string `bson:"url"`
-	Dealer string `bson:"dealer"`
-	PicturesUploaded bool `bson:"picturesUploaded"`
-
+	Id               string   `bson:"_id"`
+	Year             int      `bson:"year"`
+	Title            string   `bson:"title"`
+	Trim             string   `bson:"trim"`
+	InteriorColor    string   `bson:"interiorColor"`
+	ExteriorColor    string   `bson:"exteriorColor"`
+	Mileage          int      `bson:"mileage"`
+	LicensePlate     string   `bson:"licensePlate"`
+	Pictures         []string `bson:"pictures"`
+	MainPicture      string   `bson:"mainPicture"`
+	Currency         string   `bson:"currency"`
+	Price            int      `bson:"price"`
+	Url              string   `bson:"url"`
+	Dealer           string   `bson:"dealer"`
+	PicturesUploaded bool     `bson:"picturesUploaded"`
 }
 
 type UpdateCarInfo struct {
-	Car Car `bson:"car"`
+	Car              Car                    `bson:"car"`
 	MatchingStrategy utils.MatchingStrategy `bson:"matchingStrategy"`
-	Status utils.StatusRequest `bson:"status"`
-	PicturesUploaded bool `bson:"picturesUploaded"`
-	CarUploaded bool `bson:"carUploaded"`
-	NewId string `bson:"newId"`
+	Status           utils.StatusRequest    `bson:"status"`
+	PicturesUploaded bool                   `bson:"picturesUploaded"`
+	CarUploaded      bool                   `bson:"carUploaded"`
+	NewId            string                 `bson:"newId"`
 }
 
 func GetCars() []Car {
@@ -59,8 +58,11 @@ func GetCars() []Car {
 		{
 			"$match": bson.M{
 				"trimMatched": true,
-				"uploaded": false,
+				"uploaded":    false,
 			},
+		},
+		{
+			"$limit": 1,
 		},
 		{
 			"$project": bson.M{
@@ -75,14 +77,14 @@ func GetCars() []Car {
 				"exteriorColor": bson.M{
 					"$toString": "$exteriorColor._id",
 				},
-				"mileage": 1,
-				"licensePlate": 1,
-				"pictures": 1,
-				"mainPicture": 1,
-				"currency": 1,
-				"price": 1,
-				"url": 1,
-				"dealer": 1,
+				"mileage":          1,
+				"licensePlate":     1,
+				"pictures":         1,
+				"mainPicture":      1,
+				"currency":         1,
+				"price":            1,
+				"url":              1,
+				"dealer":           1,
 				"picturesUploaded": 1,
 			},
 		},
@@ -107,7 +109,6 @@ func GetCars() []Car {
 
 	return cars
 }
-
 
 func UpdateCar(updateCarInfo UpdateCarInfo) {
 	log.Println("Updating car: " + updateCarInfo.Car.Id)
