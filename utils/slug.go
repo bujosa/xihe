@@ -1,10 +1,16 @@
 package utils
 
-import "strings"
+import (
+	"regexp"
+	"strings"
+
+	"github.com/gosimple/slug"
+)
 
 func Slug(value []string) string {
-	// Unified string with - as separator
-	var unified string = strings.Join(value, "-")
-	return strings.ReplaceAll(strings.ToLower(unified), " ", "-")
+	var toSlug string = strings.Join(value, " ")
+	slugified := slug.Make(toSlug)
+	regex := regexp.MustCompile(`[*+~.()_'":@/]`)
+	return regex.ReplaceAllString(slugified, "")
 }
 
