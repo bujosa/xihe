@@ -25,8 +25,9 @@ type Car struct {
 	Currency         string   `bson:"currency"`
 	Price            int      `bson:"price"`
 	Url              string   `bson:"url"`
-	Dealer           string   `bson:"dealer"`
+	DealerId         string   `bson:"dealerId"`
 	PicturesUploaded bool     `bson:"picturesUploaded"`
+	Spot             string   `bson:"spot"`
 }
 
 type UpdateCarInfo struct {
@@ -84,8 +85,9 @@ func GetCars() []Car {
 				"currency":         1,
 				"price":            1,
 				"url":              1,
-				"dealer":           1,
+				"dealerId":         1,
 				"picturesUploaded": 1,
+				"spot":             1,
 			},
 		},
 	}

@@ -87,8 +87,10 @@ func CreateDealer(createDealerInput CreateDealerInput, id string) (Dealer, utils
 
 	if response.StatusCode != 200 {
 		log.Printf("Error status code %d\n", response.StatusCode)
+		log.Printf("Error data response %s\n", response.Body)
 		return Dealer{}, utils.StatusRequest("failed")
 	} else {
+		log.Printf("Dealer created with ID: %s\n", responseData.Data.CreateDealer.Id)
 		return responseData.Data.CreateDealer, utils.StatusRequest("success")
 	}
 }

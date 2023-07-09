@@ -13,7 +13,6 @@ const DEALER_COLLECTION = "dealers"
 const DEALER_SOURCE = "dealerss"
 
 func InitDealerTransformation() {
-	utils.SetLogFile("log.txt")
 	log.Println("Init dealer transformation...")
 
 	dealers := database.GetDealers()
@@ -81,6 +80,13 @@ func DealerTransformation() {
 						0,
 					},
 				},
+				"targetNumber": bson.M{
+					"$cond": bson.A{
+						bson.M{"$ifNull": bson.A{"$telephoneNumber", nil}},
+						"$telephoneNumber",
+						"$whatssapp",
+					},
+				},
 				"telephoneNumberSanitized": bson.M{
 					"$cond": []interface{}{
 						bson.M{"$ifNull": bson.A{"$telephoneNumberSanitized", nil}},
@@ -90,7 +96,7 @@ func DealerTransformation() {
 								"$map": bson.M{
 									"input": bson.M{
 										"$regexFindAll": bson.M{
-											"input": "$telephoneNumber",
+											"input": "$targetNumber",
 											"regex": "\\d",
 										},
 									},
@@ -165,4 +171,50 @@ func DealerTransformation() {
 		},
 	}
 	BaseTransformation(pipeline, utils.DEALERS_COLLECTION, utils.DATABASE)
+}
+
+func DealerIntoCarTransformation() {
+	log.Println("Starting Dealer into Car transformation...")
+
+	pipeline := []bson.M{
+		{
+			"$lookup": bson.M{
+				"from":         utils.DEALERS_COLLECTION,
+				"localField":   "dealer",
+				"foreignField": "name",
+				"as":           "dealerId",
+			},
+		},
+		{
+			"$unwind": bson.M{
+				"path":                       "$dealerId",
+				"preserveNullAndEmptyArrays": true,
+			},
+		},
+		{
+			"$addFields": bson.M{
+				"spot": bson.M{
+					"$cond": bson.A{
+						bson.M{"$ifNull": bson.A{"$spot", nil}},
+						"$spot",
+						"$dealerId.spot",
+					},
+				},
+			},
+		},
+		{
+			"$addFields": bson.M{
+				"dealerId": "$dealerId.dealer",
+			},
+		},
+		{
+			"$merge": bson.M{
+				"into":           utils.CARS_PROCESSED_COLLECTION,
+				"on":             "_id",
+				"whenMatched":    "merge",
+				"whenNotMatched": "fail",
+			},
+		},
+	}
+	BaseTransformation(pipeline, utils.CARS_PROCESSED_COLLECTION, utils.DATABASE)
 }

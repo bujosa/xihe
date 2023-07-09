@@ -1,12 +1,17 @@
 package transformation
 
-func Run() {
-	// InitDealerTransformation()
+func RunDealerTransformation() {
+	InitDealerTransformation()
 	DealerTransformation()
-	// Brand()
-	// BrandToModel("Lexus", " ", "")
-	// BrandToModel("ANIVERSARIO", "aniversario", "series")
-	// Model()
-	// Trim()
-	// Color()
+}
+
+func RunCarTransformation() {
+	// Before running section dealer run this Make sure you run dealer script before
+	Brand()
+	BrandToModel("Lexus", " ", "")
+	BrandToModel("ANIVERSARIO", "aniversario", "series")
+	Model()
+	Trim()
+	Color()
+	DealerIntoCarTransformation()
 }

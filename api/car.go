@@ -25,12 +25,13 @@ type CreateCarInput struct {
 	CountryVersion   string               `json:"countryVersion"`
 	LicensePlate     string               `json:"licensePlate"`
 	Categories       []string             `json:"categories"`
+	Dealer           string               `json:"dealer"`
 }
 
 type CreatePriceInfoInput struct {
-	BasePrice float64 `json:"basePrice"`
-	Fee       float64 `json:"fee"`
-	Transfer  float64 `json:"transfer"`
+	BasePrice int `json:"basePrice"`
+	Fee       int `json:"fee"`
+	Transfer  int `json:"transfer"`
 }
 
 type Car struct {
@@ -46,7 +47,7 @@ type CreateCarResponse struct {
 func CreateCar(createCarInput CreateCarInput, id string) (Car, utils.StatusRequest) {
 	log.Println("Creating car... with ID: " + id)
 
-	url, err:= env.GetString("PRODUCTION_API_URL")
+	url, err := env.GetString("PRODUCTION_API_URL")
 	if err != nil {
 		panic(err)
 	}
@@ -103,6 +104,7 @@ func CreateCar(createCarInput CreateCarInput, id string) (Car, utils.StatusReque
 		log.Printf("Error status code %d\n", response.StatusCode)
 		return Car{}, utils.StatusRequest("failed")
 	} else {
+		log.Printf("Car created with ID: %s\n", responseData.Data.CreateCar.Id)
 		return responseData.Data.CreateCar, utils.StatusRequest("success")
 	}
 }

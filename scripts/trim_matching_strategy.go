@@ -11,7 +11,7 @@ import (
 )
 
 func TrimMatchingStrategy() {
-	utils.SetLogFile("trim_matching_strategy.log")
+	utils.SetLogFile("trim_matching_strategy.txt")
 	log.Println("Starting Trim Matching Strategy...")
 
 	cars := database.GetCars()
@@ -29,6 +29,8 @@ func TrimMatchingStrategy() {
 	for _, car := range cars {
 		log.Println("Car: " + car.Id)
 
+		price := utils.ConvertPrice(car.Price, car.Currency)
+
 		createCatInput := api.CreateCarInput{
 			TrimLevel:        car.Trim,
 			InteriorColor:    car.InteriorColor,
@@ -36,10 +38,18 @@ func TrimMatchingStrategy() {
 			MainPicture:      car.MainPicture,
 			ExteriorPictures: []string{},
 			InteriorPictures: []string{},
-			Mileage: 		car.Mileage,
-			CountryVersion: 	countryVersion,
-			LicensePlate: 	car.LicensePlate,
-			Categories: 	[]string{category},
+			Mileage:          car.Mileage,
+			CountryVersion:   countryVersion,
+			LicensePlate:     car.LicensePlate,
+			Categories:       []string{category},
+			Dealer:           car.DealerId,
+			Provider:         "dealer",
+			CurboSpot:        car.Spot,
+			PriceInfo: api.CreatePriceInfoInput{
+				BasePrice: price,
+				Fee:       utils.FEE,
+				Transfer:  utils.TRANSFER,
+			},
 		}
 
 		if !car.PicturesUploaded {
@@ -52,8 +62,8 @@ func TrimMatchingStrategy() {
 		carUploaded, status := api.CreateCar(createCatInput, car.Id)
 
 		updateCarInfo := database.UpdateCarInfo{
-			Car: car,
-			Status: status,
+			Car:              car,
+			Status:           status,
 			MatchingStrategy: "trim",
 			PicturesUploaded: true,
 		}

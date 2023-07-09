@@ -1,13 +1,14 @@
 package main
 
 import (
-	"github.com/bujosa/xihe/scripts"
+	"github.com/bujosa/xihe/transformation"
+	"github.com/bujosa/xihe/utils"
 )
 
 func main() {
-
+	utils.SetLogFile("log.txt")
 	// Data Transformation Pipeline
-	// transformation.Run()
+	transformation.RunCarTransformation()
 
-	scripts.TrimMatchingStrategy()
+	// scripts.TrimMatchingStrategy()
 }
