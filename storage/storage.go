@@ -10,15 +10,14 @@ import (
 
 	"cloud.google.com/go/storage"
 	"github.com/bujosa/xihe/env"
-	"github.com/bujosa/xihe/utils"
 )
 
 type Storage struct {
-	bucketName string
-	projectID  string
+	bucketName    string
+	projectID     string
 	subFolderPath string
-	bucket  	*storage.BucketHandle
-	context 	context.Context
+	bucket        *storage.BucketHandle
+	context       context.Context
 }
 
 func New() *Storage {
@@ -47,16 +46,15 @@ func New() *Storage {
 	}
 
 	return &Storage{
-		bucketName: bucketName,
-		projectID:  projectId,
+		bucketName:    bucketName,
+		projectID:     projectId,
 		subFolderPath: subFolderPath,
-		bucket:  	client.Bucket(bucketName),
-		context: 	ctx,
+		bucket:        client.Bucket(bucketName),
+		context:       ctx,
 	}
 }
 
 func (s Storage) Upload(url string) (string, error) {
-	utils.SetLogFile("upload_pictures.log.txt")
 	log.Print("Upload Picture with url: ", url)
 
 	resp, err := http.Get(url)
@@ -69,7 +67,7 @@ func (s Storage) Upload(url string) (string, error) {
 	parts := strings.Split(url, "/")
 	urlFormat := parts[len(parts)-1]
 
-	objectName := s.subFolderPath + urlFormat;
+	objectName := s.subFolderPath + urlFormat
 	object := s.bucket.Object(objectName)
 
 	wc := object.NewWriter(s.context)

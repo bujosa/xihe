@@ -11,7 +11,6 @@ import (
 )
 
 func TrimMatchingStrategy() {
-	utils.SetLogFile("trim_matching_strategy.txt")
 	log.Println("Starting Trim Matching Strategy...")
 
 	cars := database.GetCars()
@@ -54,7 +53,6 @@ func TrimMatchingStrategy() {
 
 		if !car.PicturesUploaded {
 			UploadPictures(car, &createCatInput)
-			utils.SetLogFile("trim_matching_strategy.log")
 		} else {
 			log.Println("Pictures already uploaded for car: " + car.Id)
 		}

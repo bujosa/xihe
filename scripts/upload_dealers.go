@@ -6,13 +6,11 @@ import (
 	"github.com/bujosa/xihe/api"
 	"github.com/bujosa/xihe/database"
 	"github.com/bujosa/xihe/env"
-	"github.com/bujosa/xihe/utils"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
 func UploadDealers() {
 	// Get dealers from database
-	utils.SetLogFile("dealer.txt")
 	log.Println("Starting dealer upload...")
 	dealers := database.GetDealers()
 
