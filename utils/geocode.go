@@ -21,6 +21,7 @@ type GeocodeResponse struct {
 }
 
 func Geocode(address string) (float64, float64, error) {
+	address = ReplaceNewLine(address)
 	key, err := env.GetString("GOOGLE_MAPS_API_KEY")
 	if err != nil {
 		return 0, 0, err
@@ -38,8 +39,6 @@ func Geocode(address string) (float64, float64, error) {
 	if err != nil {
 		return 0, 0, err
 	}
-
-	print(data.Results)
 
 	if len(data.Results) == 0 {
 		return 0, 0, fmt.Errorf("no results found")
