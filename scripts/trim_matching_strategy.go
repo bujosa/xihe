@@ -68,9 +68,9 @@ func TrimMatchingStrategy() {
 				"status":           status,
 				"matchingStrategy": "trim",
 				"picturesUploaded": true,
-				"mainPicture":      car.MainPicture,
-				"exteriorPictures": car.ExteriorPictures,
-				"interiorPictures": car.InteriorPictures,
+				"mainPicture":      createCarInput.MainPicture,
+				"exteriorPictures": createCarInput.ExteriorPictures,
+				"interiorPictures": createCarInput.InteriorPictures,
 				"newId":            carUploaded.Id,
 			},
 		}

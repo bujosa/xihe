@@ -93,6 +93,14 @@ func CreateCar(createCarInput CreateCarInput, id string) (Car, utils.StatusReque
 	}
 	defer response.Body.Close()
 
+	// responseReader := response.Body
+	// body, err := ioutil.ReadAll(responseReader)
+	// if err != nil {
+	// 	log.Printf("Error reading response body %s\n", err)
+	// 	return Car{}, utils.StatusRequest("failed")
+	// }
+	// log.Println(string(body))
+
 	var responseData CreateCarResponse
 	err = json.NewDecoder(response.Body).Decode(&responseData)
 	if err != nil {
