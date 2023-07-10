@@ -1,6 +1,6 @@
 package utils
 
-const DB_URL_ENV_KEY = "SUPER_CARROS_DATABASE_URL"
+const DB_URL_ENV_KEY = "DATABASE_URI"
 const DATABASE = "catalog"
 const CARS_PROCESSED_COLLECTION = "cars_processed"
 const DEALERS_COLLECTION = "dealers_supercarros"
