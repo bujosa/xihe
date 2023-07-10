@@ -1,6 +1,9 @@
 package utils
 
-import "testing"
+import (
+	"log"
+	"testing"
+)
 
 func TestSlug(t *testing.T) {
 	tests := []struct {
@@ -14,7 +17,7 @@ func TestSlug(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		print(test.input + "\n")
+		log.Print(test.input + "\n")
 
 		convert := []string{test.input}
 		result := Slug(convert)

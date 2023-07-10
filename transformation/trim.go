@@ -1,6 +1,8 @@
 package transformation
 
 import (
+	"log"
+
 	"github.com/bujosa/xihe/utils"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -8,8 +10,8 @@ import (
 const TRIM_SOURCE = "trimlevels"
 
 func Trim() {
-	print("Starting trim transformation... \n")
-	
+	log.Print("Starting trim transformation... \n")
+
 	pipeline := []bson.M{
 		{
 			"$match": bson.M{
@@ -21,7 +23,7 @@ func Trim() {
 				"from": TRIM_SOURCE,
 				"let": bson.M{
 					"modelId": "$model._id",
-					"year": "$year",
+					"year":    "$year",
 				},
 				"pipeline": []bson.M{
 					{
@@ -49,16 +51,16 @@ func Trim() {
 					},
 					{
 						"$project": bson.M{
-							"_id": 1,
-							"id": 1,
-							"slug": 1,
-							"name": 1,
-							"carModel": 1,
-							"bodyStyle": 1,
-							"driveTrain": 1,
-							"fuelType": 1,
+							"_id":          1,
+							"id":           1,
+							"slug":         1,
+							"name":         1,
+							"carModel":     1,
+							"bodyStyle":    1,
+							"driveTrain":   1,
+							"fuelType":     1,
 							"transmission": 1,
-							"features": 1,
+							"features":     1,
 						},
 					},
 				},
@@ -67,7 +69,7 @@ func Trim() {
 		},
 		{
 			"$unwind": bson.M{
-				"path": "$trim",
+				"path":                       "$trim",
 				"preserveNullAndEmptyArrays": true,
 			},
 		},
@@ -87,11 +89,11 @@ func Trim() {
 				},
 			},
 		},
-		{ 
+		{
 			"$merge": bson.M{
-				"into": utils.CARS_PROCESSED_COLLECTION,
-				"on": "_id",
-				"whenMatched": "merge",
+				"into":           utils.CARS_PROCESSED_COLLECTION,
+				"on":             "_id",
+				"whenMatched":    "merge",
 				"whenNotMatched": "fail",
 			},
 		},

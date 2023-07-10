@@ -1,6 +1,8 @@
 package transformation
 
 import (
+	"log"
+
 	"github.com/bujosa/xihe/utils"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -8,7 +10,7 @@ import (
 const BRAND_SOURCE = "brands"
 
 func Brand() {
-	print("Starting brand transformation...\n")
+	log.Print("Starting brand transformation...\n")
 
 	pipeline := []bson.M{
 		{
@@ -128,7 +130,7 @@ func Brand() {
 }
 
 func BrandToModel(regex string, find string, replacement string) {
-	print("Starting brand to model transformation... with regex: " + regex + " find: " + find + " replacement: " + replacement + "\n")
+	log.Print("Starting brand to model transformation... with regex: " + regex + " find: " + find + " replacement: " + replacement + "\n")
 
 	pipeline := []bson.M{
 		{

@@ -1,6 +1,8 @@
 package transformation
 
 import (
+	"log"
+
 	"github.com/bujosa/xihe/utils"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -8,8 +10,8 @@ import (
 const COLORS_SOURCE = "colors"
 
 func Color() {
-	print("Starting color transformation... \n")
-	
+	log.Print("Starting color transformation... \n")
+
 	pipeline := []bson.M{
 		{
 			"$lookup": bson.M{
@@ -24,15 +26,15 @@ func Color() {
 								"$or": []interface{}{
 									bson.M{
 										"$regexMatch": bson.M{
-											"input": "$name",
-											"regex": "$$searchColor",
+											"input":   "$name",
+											"regex":   "$$searchColor",
 											"options": "i",
 										},
 									},
 									bson.M{
 										"$regexMatch": bson.M{
-											"input": "$name",
-											"regex": "Cream",
+											"input":   "$name",
+											"regex":   "Cream",
 											"options": "i",
 										},
 									},
@@ -49,7 +51,7 @@ func Color() {
 		},
 		{
 			"$unwind": bson.M{
-				"path": "$interiorColor",
+				"path":                       "$interiorColor",
 				"preserveNullAndEmptyArrays": true,
 			},
 		},
@@ -82,15 +84,15 @@ func Color() {
 								"$or": []interface{}{
 									bson.M{
 										"$regexMatch": bson.M{
-											"input": "$name",
-											"regex": "$$searchColor",
+											"input":   "$name",
+											"regex":   "$$searchColor",
 											"options": "i",
 										},
 									},
 									bson.M{
 										"$regexMatch": bson.M{
-											"input": "$name",
-											"regex": "Cream",
+											"input":   "$name",
+											"regex":   "Cream",
 											"options": "i",
 										},
 									},
@@ -107,7 +109,7 @@ func Color() {
 		},
 		{
 			"$unwind": bson.M{
-				"path": "$exteriorColor",
+				"path":                       "$exteriorColor",
 				"preserveNullAndEmptyArrays": true,
 			},
 		},
@@ -127,11 +129,11 @@ func Color() {
 				},
 			},
 		},
-		{ 
+		{
 			"$merge": bson.M{
-				"into": utils.CARS_PROCESSED_COLLECTION,
-				"on": "_id",
-				"whenMatched": "merge",
+				"into":           utils.CARS_PROCESSED_COLLECTION,
+				"on":             "_id",
+				"whenMatched":    "merge",
 				"whenNotMatched": "fail",
 			},
 		},

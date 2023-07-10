@@ -1,6 +1,8 @@
 package transformation
 
 import (
+	"log"
+
 	"github.com/bujosa/xihe/utils"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -8,7 +10,7 @@ import (
 const MODEL_SOURCE = "models"
 
 func Model() {
-	print("Starting model transformation... \n")
+	log.Print("Starting model transformation... \n")
 
 	pipeline := []bson.M{
 		{
@@ -19,9 +21,9 @@ func Model() {
 						"-",
 						bson.M{
 							"$replaceAll": bson.M{
-									"input": "$model",
-									"find": " ",
-									"replacement": "-",
+								"input":       "$model",
+								"find":        " ",
+								"replacement": "-",
 							},
 						},
 					},
@@ -30,15 +32,15 @@ func Model() {
 		},
 		{
 			"$lookup": bson.M{
-				"from": MODEL_SOURCE,
-				"localField": "modelSlug",
+				"from":         MODEL_SOURCE,
+				"localField":   "modelSlug",
 				"foreignField": "slug",
-				"as": "model",
+				"as":           "model",
 			},
 		},
 		{
 			"$unwind": bson.M{
-				"path": "$model",
+				"path":                       "$model",
 				"preserveNullAndEmptyArrays": true,
 			},
 		},
@@ -57,7 +59,7 @@ func Model() {
 					},
 				},
 				"trimMatched": false,
-				"uploaded": false,
+				"uploaded":    false,
 			},
 		},
 		{"$out": utils.CARS_PROCESSED_COLLECTION},
