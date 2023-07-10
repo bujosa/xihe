@@ -72,6 +72,8 @@ func (s Storage) Upload(url string) (string, error) {
 
 	wc := object.NewWriter(s.context)
 
+	wc.ACL = []storage.ACLRule{{Entity: storage.AllUsers, Role: storage.RoleReader}}
+
 	if _, err = io.Copy(wc, resp.Body); err != nil {
 		log.Println(err)
 		return "", err
@@ -82,8 +84,12 @@ func (s Storage) Upload(url string) (string, error) {
 		return "", err
 	}
 
+	formatUrl := "https://storage.googleapis.com/" + s.bucketName + "/" + objectName
+
+	log.Println("Picture uploaded successfully: " + formatUrl)
+
 	// Return new url of the file in the bucket storage in gcp
-	return "https://storage.googleapis.com/" + s.bucketName + "/" + objectName, nil
+	return formatUrl, nil
 }
 
 func (s Storage) AlreadyExist(url string) bool {
