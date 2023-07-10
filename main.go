@@ -2,14 +2,24 @@ package main
 
 import (
 	"flag"
+	"log"
+	"os"
+	"time"
 
 	"github.com/bujosa/xihe/scripts"
 	"github.com/bujosa/xihe/transformation"
-	"github.com/bujosa/xihe/utils"
 )
 
 func main() {
-	utils.SetLogFile("log.txt")
+	logName := "./logs/log_" + time.Now().Format("2006_01_02_15_04") + ".txt"
+	logFile, err := os.OpenFile(logName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		panic(err)
+	}
+	defer logFile.Close()
+
+	log.SetOutput(logFile)
+
 	var transformationCommand string
 	var uploadCommand string
 	var helpFlag bool

@@ -27,4 +27,4 @@ go.work
 credentials.json
 
 # Log files
-log.txt
+*.txt
