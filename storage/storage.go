@@ -57,6 +57,8 @@ func New() *Storage {
 func (s Storage) Upload(url string) (string, error) {
 	log.Print("Upload Picture with url: ", url)
 
+	url = strings.Replace(url, "800x600", "500x500", 1)
+
 	resp, err := http.Get(url)
 	if err != nil {
 		log.Println("Error downloading picture: " + url)

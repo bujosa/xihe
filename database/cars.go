@@ -62,7 +62,7 @@ func GetCars() []Car {
 			},
 		},
 		{
-			"$limit": 1,
+			"$limit": 2,
 		},
 		{
 			"$project": bson.M{
