@@ -81,6 +81,7 @@ func TrimMatchingStrategy() {
 			continue
 		}
 
+		updateCarInfo.Set["uploaded"] = true
 		database.UpdateCar(updateCarInfo)
 		time.Sleep(5 * time.Second)
 	}
