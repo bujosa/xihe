@@ -2,6 +2,7 @@ package scripts
 
 import (
 	"log"
+	"time"
 
 	"github.com/bujosa/xihe/api"
 	"github.com/bujosa/xihe/database"
@@ -27,6 +28,8 @@ func UploadDealers() {
 			dealer.TelephoneNumberSanitized = "8090000000"
 		}
 
+		dealer.TelephoneNumberSanitized = utils.TransformTelephoneNumber(dealer.TelephoneNumberSanitized)
+
 		createDealerInput := api.CreateDealerInput{
 			Name:            dealer.Name,
 			Address:         geoCode + " " + utils.ReplaceNewLine(dealer.Address),
@@ -46,11 +49,14 @@ func UploadDealers() {
 		updateDealerInfo := database.UpdateDealerInfo{
 			Id: dealer.Id,
 			Set: bson.M{
-				"uploaded": true,
-				"dealer":   newDealer.Id,
+				"uploaded":                 true,
+				"dealer":                   newDealer.Id,
+				"telephoneNumberSanitized": dealer.TelephoneNumberSanitized,
 			},
 		}
 
 		database.UpdateDealer(updateDealerInfo)
+
+		time.Sleep(3 * time.Second)
 	}
 }
