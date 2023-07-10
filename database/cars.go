@@ -29,15 +29,13 @@ type Car struct {
 	DealerId         string   `bson:"dealerId"`
 	PicturesUploaded bool     `bson:"picturesUploaded"`
 	Spot             string   `bson:"spot"`
+	ExteriorPictures []string `bson:"exteriorPictures"`
+	InteriorPictures []string `bson:"interiorPictures"`
 }
 
 type UpdateCarInfo struct {
-	Car              Car                    `bson:"car"`
-	MatchingStrategy utils.MatchingStrategy `bson:"matchingStrategy"`
-	Status           utils.StatusRequest    `bson:"status"`
-	PicturesUploaded bool                   `bson:"picturesUploaded"`
-	CarUploaded      bool                   `bson:"carUploaded"`
-	NewId            string                 `bson:"newId"`
+	Car Car    `bson:"car"`
+	Set bson.M `bson:"$set"`
 }
 
 func GetCars() []Car {
@@ -89,6 +87,8 @@ func GetCars() []Car {
 				"dealerId":         1,
 				"picturesUploaded": 1,
 				"spot":             1,
+				"exteriorPictures": 1,
+				"interiorPictures": 1,
 			},
 		},
 	}
@@ -138,7 +138,11 @@ func UpdateCar(updateCarInfo UpdateCarInfo) {
 	}
 
 	filter := bson.M{"_id": objectId}
-	update := bson.M{"$set": bson.M{"uploaded": updateCarInfo.CarUploaded, "status": updateCarInfo.Status, "newId": updateCarInfo.NewId, "matchingStrategy": updateCarInfo.MatchingStrategy, "picturesUploaded": updateCarInfo.PicturesUploaded, "updatedAt": time.Now().UTC()}}
+	update := bson.M{
+		"$set": updateCarInfo.Set,
+	}
+
+	update["$set"].(bson.M)["updatedAt"] = time.Now().UTC()
 
 	_, err = coll.UpdateOne(context.Background(), filter, update)
 	if err != nil {
