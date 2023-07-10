@@ -43,6 +43,26 @@ func Brand() {
 				},
 				"licensePlate":     "$_id",
 				"picturesUploaded": false,
+				"interiorPictures": bson.M{
+					"$cond": bson.A{
+						bson.M{"$or": bson.A{
+							bson.M{"$eq": bson.A{"$interiorPictures", nil}},
+							bson.M{"$eq": bson.A{"$interiorPictures", bson.A{}}},
+						}},
+						bson.A{},
+						"$interiorPictures",
+					},
+				},
+				"exteriorPictures": bson.M{
+					"$cond": bson.A{
+						bson.M{"$or": bson.A{
+							bson.M{"$eq": bson.A{"$exteriorPictures", nil}},
+							bson.M{"$eq": bson.A{"$exteriorPictures", bson.A{}}},
+						}},
+						bson.A{},
+						"$exteriorPictures",
+					},
+				},
 			},
 		},
 		{
