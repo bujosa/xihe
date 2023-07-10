@@ -26,6 +26,7 @@ type CreateCarInput struct {
 	LicensePlate     string               `json:"licensePlate"`
 	Categories       []string             `json:"categories"`
 	Dealer           string               `json:"dealer"`
+	VinNumber        string               `json:"vinNumber"`
 }
 
 type CreatePriceInfoInput struct {
@@ -63,15 +64,13 @@ func CreateCar(createCarInput CreateCarInput, id string) (Car, utils.StatusReque
 			}
 		}
 	`
-
-	request := GraphqlRequest{
-		Query: mutation,
-		Variables: map[string]interface{}{
+	requestBody, err := json.Marshal(map[string]interface{}{
+		"query": mutation,
+		"variables": map[string]interface{}{
 			"input": createCarInput,
 		},
-	}
+	})
 
-	requestBody, err := json.Marshal(request)
 	if err != nil {
 		log.Printf("Error marshalling request body %s\n", err)
 		return Car{}, utils.StatusRequest("failed")
@@ -83,6 +82,7 @@ func CreateCar(createCarInput CreateCarInput, id string) (Car, utils.StatusReque
 		return Car{}, utils.StatusRequest("failed")
 	}
 
+	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", "Bearer "+token)
 
 	client := &http.Client{}
