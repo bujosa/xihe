@@ -9,15 +9,10 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-const DEALER_COLLECTION = "dealers"
-const DEALER_SOURCE = "dealerss"
-
 func InitDealerTransformation() {
 	log.Println("Init dealer transformation...")
 
 	dealers := database.GetDealers()
-
-	print(len(dealers))
 
 	for _, dealer := range dealers {
 		slug := utils.Slug([]string{dealer.Name})
@@ -136,7 +131,7 @@ func DealerTransformation() {
 		},
 		{
 			"$lookup": bson.M{
-				"from":         DEALER_SOURCE,
+				"from":         utils.DEALERS_SOURCE_COLLECTION,
 				"localField":   "slug",
 				"foreignField": "slug",
 				"as":           "dealer",

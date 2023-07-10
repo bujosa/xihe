@@ -5,7 +5,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-const COLLECTION = "cars"
 const BRAND_SOURCE = "brands"
 
 func Brand() {
@@ -20,7 +19,7 @@ func Brand() {
 				"model": bson.M{
 					"$toLower": "$model",
 				},
-				"interiorColor":  bson.M{
+				"interiorColor": bson.M{
 					"$arrayElemAt": []interface{}{
 						bson.M{
 							"$split": []interface{}{
@@ -29,9 +28,9 @@ func Brand() {
 							},
 						},
 						0,
-					},	
+					},
 				},
-				"exteriorColor":  bson.M{
+				"exteriorColor": bson.M{
 					"$arrayElemAt": []interface{}{
 						bson.M{
 							"$split": []interface{}{
@@ -40,15 +39,15 @@ func Brand() {
 							},
 						},
 						0,
-					},		
+					},
 				},
-				"licensePlate": "$_id",
+				"licensePlate":     "$_id",
 				"picturesUploaded": false,
 			},
 		},
 		{
 			"$addFields": bson.M{
-				"interiorColor":  bson.M{
+				"interiorColor": bson.M{
 					"$arrayElemAt": []interface{}{
 						bson.M{
 							"$split": []interface{}{
@@ -57,9 +56,9 @@ func Brand() {
 							},
 						},
 						0,
-					},	
+					},
 				},
-				"exteriorColor":  bson.M{
+				"exteriorColor": bson.M{
 					"$arrayElemAt": []interface{}{
 						bson.M{
 							"$split": []interface{}{
@@ -68,21 +67,21 @@ func Brand() {
 							},
 						},
 						0,
-					},		
+					},
 				},
 			},
 		},
 		{
 			"$lookup": bson.M{
-				"from": BRAND_SOURCE,
-				"localField": "brand",
+				"from":         BRAND_SOURCE,
+				"localField":   "brand",
 				"foreignField": "slug",
-				"as": "brand",
+				"as":           "brand",
 			},
 		},
 		{
 			"$unwind": bson.M{
-				"path": "$brand",
+				"path":                       "$brand",
 				"preserveNullAndEmptyArrays": true,
 			},
 		},
@@ -97,7 +96,7 @@ func Brand() {
 			"$match": bson.M{
 				"brand": bson.M{
 					"$exists": true,
-					"$ne": nil,
+					"$ne":     nil,
 				},
 			},
 		},
@@ -105,7 +104,7 @@ func Brand() {
 			"$out": utils.CARS_PROCESSED_COLLECTION,
 		},
 	}
-	BaseTransformation(pipeline, COLLECTION, utils.DATABASE)
+	BaseTransformation(pipeline, utils.CARS_NON_PROCESSED_COLLECTION, utils.DATABASE)
 }
 
 func BrandToModel(regex string, find string, replacement string) {
@@ -123,18 +122,18 @@ func BrandToModel(regex string, find string, replacement string) {
 			"$addFields": bson.M{
 				"model": bson.M{
 					"$replaceOne": bson.M{
-									"input": "$model",
-									"find": find,
-									"replacement": replacement,
+						"input":       "$model",
+						"find":        find,
+						"replacement": replacement,
 					},
 				},
 			},
 		},
 		{
 			"$merge": bson.M{
-				"into": utils.CARS_PROCESSED_COLLECTION,
-				"on": "_id",
-				"whenMatched": "replace",
+				"into":           utils.CARS_PROCESSED_COLLECTION,
+				"on":             "_id",
+				"whenMatched":    "replace",
 				"whenNotMatched": "fail",
 			},
 		},
