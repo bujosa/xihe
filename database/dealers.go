@@ -54,9 +54,6 @@ func GetDealers() []Dealer {
 			},
 		},
 		{
-			"$limit": 5,
-		},
-		{
 			"$project": bson.M{
 				"dealer":                   1,
 				"uploaded":                 1,
