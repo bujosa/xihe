@@ -47,6 +47,11 @@ func Trim() {
 						},
 					},
 					{
+						"$match": bson.M{
+							"deleted": false,
+						},
+					},
+					{
 						"$limit": 1,
 					},
 					{
