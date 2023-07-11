@@ -38,7 +38,73 @@ type UpdateCarInfo struct {
 	Set bson.M `bson:"$set"`
 }
 
+type Filter struct {
+	Match bson.M `bson:"$match"`
+}
+
 func GetCars() []Car {
+	filter := Filter{
+		Match: bson.M{
+			"trimMatched": true,
+			"uploaded":    false,
+		},
+	}
+
+	return BaseGetCars(filter)
+}
+
+func UpdateCar(updateCarInfo UpdateCarInfo) {
+	log.Println("Updating car: " + updateCarInfo.Car.Id)
+
+	dbUri, err := env.GetString(utils.DB_URL_ENV_KEY)
+	if err != nil {
+		panic(err)
+	}
+
+	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(
+		dbUri,
+	))
+	if err != nil {
+		panic(err)
+	}
+
+	db := client.Database(utils.DATABASE)
+	coll := db.Collection(utils.CARS_PROCESSED_COLLECTION)
+
+	objectId, err := utils.ToObjectId(updateCarInfo.Car.Id)
+	if err != nil {
+		log.Println("Error converting id to ObjectId: " + updateCarInfo.Car.Id)
+		return
+	}
+
+	filter := bson.M{"_id": objectId}
+	update := bson.M{
+		"$set": updateCarInfo.Set,
+	}
+
+	update["$set"].(bson.M)["updatedAt"] = time.Now().UTC()
+
+	_, err = coll.UpdateOne(context.Background(), filter, update)
+	if err != nil {
+		log.Print("Error updating car: " + updateCarInfo.Car.Id)
+	}
+	log.Println("Updated car: " + updateCarInfo.Car.Id)
+}
+
+func GetCarsWithPublishDealers() []Car {
+
+	filter := Filter{
+		Match: bson.M{
+			"trimMatched":         true,
+			"uploaded":            false,
+			"dealerObject.status": "PUBLISHED",
+		},
+	}
+
+	return BaseGetCars(filter)
+}
+
+func BaseGetCars(filter Filter) []Car {
 	dbUri, err := env.GetString(utils.DB_URL_ENV_KEY)
 	if err != nil {
 		panic(err)
@@ -56,13 +122,10 @@ func GetCars() []Car {
 
 	pipeline := []bson.M{
 		{
-			"$match": bson.M{
-				"trimMatched": true,
-				"uploaded":    false,
-			},
+			"$match": filter.Match,
 		},
 		{
-			"$limit": 2,
+			"$limit": 10,
 		},
 		{
 			"$project": bson.M{
@@ -111,42 +174,4 @@ func GetCars() []Car {
 	}
 
 	return cars
-}
-
-func UpdateCar(updateCarInfo UpdateCarInfo) {
-	log.Println("Updating car: " + updateCarInfo.Car.Id)
-
-	dbUri, err := env.GetString(utils.DB_URL_ENV_KEY)
-	if err != nil {
-		panic(err)
-	}
-
-	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(
-		dbUri,
-	))
-	if err != nil {
-		panic(err)
-	}
-
-	db := client.Database(utils.DATABASE)
-	coll := db.Collection(utils.CARS_PROCESSED_COLLECTION)
-
-	objectId, err := utils.ToObjectId(updateCarInfo.Car.Id)
-	if err != nil {
-		log.Println("Error converting id to ObjectId: " + updateCarInfo.Car.Id)
-		return
-	}
-
-	filter := bson.M{"_id": objectId}
-	update := bson.M{
-		"$set": updateCarInfo.Set,
-	}
-
-	update["$set"].(bson.M)["updatedAt"] = time.Now().UTC()
-
-	_, err = coll.UpdateOne(context.Background(), filter, update)
-	if err != nil {
-		log.Print("Error updating car: " + updateCarInfo.Car.Id)
-	}
-	log.Println("Updated car: " + updateCarInfo.Car.Id)
 }
