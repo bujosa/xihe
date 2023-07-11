@@ -88,11 +88,12 @@ func TrimMatchingStrategy(dealerPublished bool) {
 		if status != "success" {
 			log.Println("Error creating car: " + car.Id)
 			database.UpdateCar(updateCarInfo)
+			time.Sleep(6 * time.Second)
 			continue
 		}
 
 		updateCarInfo.Set["uploaded"] = true
 		database.UpdateCar(updateCarInfo)
-		time.Sleep(5 * time.Second)
+		time.Sleep(6 * time.Second)
 	}
 }

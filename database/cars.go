@@ -99,6 +99,7 @@ func GetCarsWithPublishDealers() []Car {
 			"trimMatched":         true,
 			"uploaded":            false,
 			"dealerObject.status": "PUBLISHED",
+			"status":              bson.M{"$ne": "failed"},
 		},
 	}
 
