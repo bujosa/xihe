@@ -9,15 +9,15 @@ import (
 	"github.com/bujosa/xihe/storage"
 )
 
-func UploadPictures(car database.Car, createCarInput *api.CreateCarInput) {
+func UploadPictures(car database.Car, createCarInput *api.CreateCarInput) error {
 	log.Print("Starting upload pictures script... for car: " + car.Id)
 
 	pictures := car.Pictures
 	storage := storage.New()
 	mainPicture, err := storage.Upload(car.MainPicture)
-	retry := 0
 
 	if err != nil {
+		retry := 0
 		for retry < 5 {
 			mainPicture, err = storage.Upload(car.MainPicture)
 
@@ -29,6 +29,10 @@ func UploadPictures(car database.Car, createCarInput *api.CreateCarInput) {
 			time.Sleep(time.Second * 2)
 		}
 
+		if err != nil {
+			log.Println("Error uploading main picture: " + car.MainPicture)
+			return err
+		}
 	}
 
 	createCarInput.MainPicture = mainPicture
@@ -45,4 +49,6 @@ func UploadPictures(car database.Car, createCarInput *api.CreateCarInput) {
 
 		time.Sleep(time.Millisecond * 300)
 	}
+
+	return nil
 }

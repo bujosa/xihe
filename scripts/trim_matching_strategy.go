@@ -61,7 +61,11 @@ func TrimMatchingStrategy(dealerPublished bool) {
 		}
 
 		if !car.PicturesUploaded {
-			UploadPictures(car, &createCarInput)
+			err := UploadPictures(car, &createCarInput)
+			if err != nil {
+				log.Println("Error uploading pictures for car: " + car.Id)
+				continue
+			}
 		} else {
 			log.Println("Pictures already uploaded for car: " + car.Id)
 		}
