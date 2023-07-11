@@ -125,9 +125,6 @@ func BaseGetCars(filter Filter) []Car {
 			"$match": filter.Match,
 		},
 		{
-			"$limit": 10,
-		},
-		{
 			"$project": bson.M{
 				"year":  1,
 				"title": 1,

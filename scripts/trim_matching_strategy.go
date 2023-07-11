@@ -66,6 +66,10 @@ func TrimMatchingStrategy(dealerPublished bool) {
 			log.Println("Pictures already uploaded for car: " + car.Id)
 		}
 
+		if createCarInput.Mileage == 0 {
+			createCarInput.Mileage = 1
+		}
+
 		carUploaded, status := api.CreateCar(createCarInput, car.Id)
 
 		updateCarInfo := database.UpdateCarInfo{
