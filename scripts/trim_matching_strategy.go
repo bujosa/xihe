@@ -7,6 +7,7 @@ import (
 	"github.com/bujosa/xihe/api"
 	"github.com/bujosa/xihe/database"
 	"github.com/bujosa/xihe/env"
+	"github.com/bujosa/xihe/storage"
 	"github.com/bujosa/xihe/utils"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -23,6 +24,8 @@ func TrimMatchingStrategy(dealerPublished bool) {
 	if err != nil {
 		panic(err)
 	}
+
+	storage := storage.New()
 
 	var cars []database.Car
 
@@ -61,7 +64,7 @@ func TrimMatchingStrategy(dealerPublished bool) {
 		}
 
 		if !car.PicturesUploaded {
-			err := UploadPictures(car, &createCarInput)
+			err := UploadPictures(storage, car, &createCarInput)
 			if err != nil {
 				log.Println("Error uploading pictures for car: " + car.Id)
 				continue

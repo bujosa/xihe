@@ -9,11 +9,10 @@ import (
 	"github.com/bujosa/xihe/storage"
 )
 
-func UploadPictures(car database.Car, createCarInput *api.CreateCarInput) error {
+func UploadPictures(storage *storage.Storage, car database.Car, createCarInput *api.CreateCarInput) error {
 	log.Print("Starting upload pictures script... for car: " + car.Id)
 
 	pictures := car.Pictures
-	storage := storage.New()
 	mainPicture, err := storage.Upload(car.MainPicture)
 
 	if err != nil {
