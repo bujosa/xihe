@@ -15,9 +15,20 @@ func UploadPictures(car database.Car, createCarInput *api.CreateCarInput) {
 	pictures := car.Pictures
 	storage := storage.New()
 	mainPicture, err := storage.Upload(car.MainPicture)
+	retry := 0
 
 	if err != nil {
-		panic(err)
+		for retry < 5 {
+			mainPicture, err = storage.Upload(car.MainPicture)
+
+			if err == nil {
+				break
+			}
+
+			retry++
+			time.Sleep(time.Second * 2)
+		}
+
 	}
 
 	createCarInput.MainPicture = mainPicture
@@ -32,6 +43,6 @@ func UploadPictures(car database.Car, createCarInput *api.CreateCarInput) {
 		createCarInput.ExteriorPictures = append(createCarInput.ExteriorPictures, newPicture)
 		createCarInput.InteriorPictures = append(createCarInput.InteriorPictures, newPicture)
 
-		time.Sleep(time.Second * 1)
+		time.Sleep(time.Millisecond * 300)
 	}
 }

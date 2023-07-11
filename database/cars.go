@@ -86,7 +86,21 @@ func UpdateCar(updateCarInfo UpdateCarInfo) {
 
 	_, err = coll.UpdateOne(context.Background(), filter, update)
 	if err != nil {
-		log.Print("Error updating car: " + updateCarInfo.Car.Id)
+		maxRetries := 3
+		retryInterval := time.Second * 2
+
+		for i := 0; i < maxRetries; i++ {
+			_, err = coll.UpdateOne(context.Background(), filter, update)
+			if err == nil {
+				log.Println("Updated car: " + updateCarInfo.Car.Id)
+				return
+			}
+
+			log.Printf("Error updating car: %s. Retrying in %s...", updateCarInfo.Car.Id, retryInterval)
+			time.Sleep(retryInterval)
+		}
+
+		log.Println("Failed to update car after multiple attempts")
 		return
 	}
 	log.Println("Updated car: " + updateCarInfo.Car.Id)
