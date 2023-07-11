@@ -2,6 +2,7 @@ package scripts
 
 import (
 	"log"
+	"time"
 
 	"github.com/bujosa/xihe/api"
 	"github.com/bujosa/xihe/database"
@@ -30,5 +31,7 @@ func UploadPictures(car database.Car, createCarInput *api.CreateCarInput) {
 
 		createCarInput.ExteriorPictures = append(createCarInput.ExteriorPictures, newPicture)
 		createCarInput.InteriorPictures = append(createCarInput.InteriorPictures, newPicture)
+
+		time.Sleep(time.Second * 1)
 	}
 }
