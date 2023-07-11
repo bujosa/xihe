@@ -10,7 +10,6 @@ import (
 
 func UploadPictures(car database.Car, createCarInput *api.CreateCarInput) {
 	log.Print("Starting upload pictures script... for car: " + car.Id)
-	log.Print(createCarInput)
 
 	pictures := car.Pictures
 	storage := storage.New()

@@ -87,6 +87,7 @@ func UpdateCar(updateCarInfo UpdateCarInfo) {
 	_, err = coll.UpdateOne(context.Background(), filter, update)
 	if err != nil {
 		log.Print("Error updating car: " + updateCarInfo.Car.Id)
+		return
 	}
 	log.Println("Updated car: " + updateCarInfo.Car.Id)
 }
