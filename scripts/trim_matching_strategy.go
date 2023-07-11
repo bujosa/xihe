@@ -11,7 +11,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func TrimMatchingStrategy() {
+func TrimMatchingStrategy(dealerPublished bool) {
 	log.Println("Starting Trim Matching Strategy...")
 
 	countryVersion, err := env.GetString("COUNTRY_VERSION_ID")
@@ -24,7 +24,13 @@ func TrimMatchingStrategy() {
 		panic(err)
 	}
 
-	cars := database.GetCars()
+	var cars []database.Car
+
+	if dealerPublished {
+		cars = database.GetCarsWithPublishDealers()
+	} else {
+		cars = database.GetCars()
+	}
 
 	for _, car := range cars {
 		log.Println("Car: " + car.Id)

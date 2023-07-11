@@ -45,6 +45,8 @@ func main() {
 	if uploadCommand == "dealers" {
 		scripts.UploadDealers()
 	} else if uploadCommand == "cars" {
-		scripts.TrimMatchingStrategy()
+		scripts.TrimMatchingStrategy(false)
+	} else if uploadCommand == "cars published" {
+		scripts.TrimMatchingStrategy(true)
 	}
 }

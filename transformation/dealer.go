@@ -145,6 +145,7 @@ func DealerTransformation() {
 		},
 		{
 			"$addFields": bson.M{
+				"dealerObject": "$dealer",
 				"dealer": bson.M{
 					"$cond": bson.A{
 						bson.M{"$ifNull": bson.A{"$dealer", nil}},
@@ -177,12 +178,12 @@ func DealerIntoCarTransformation() {
 				"from":         utils.DEALERS_COLLECTION,
 				"localField":   "dealer",
 				"foreignField": "name",
-				"as":           "dealerId",
+				"as":           "dealerObject",
 			},
 		},
 		{
 			"$unwind": bson.M{
-				"path":                       "$dealerId",
+				"path":                       "$dealerObject",
 				"preserveNullAndEmptyArrays": true,
 			},
 		},
@@ -192,14 +193,15 @@ func DealerIntoCarTransformation() {
 					"$cond": bson.A{
 						bson.M{"$ifNull": bson.A{"$spot", nil}},
 						"$spot",
-						"$dealerId.spot",
+						"$dealerObject.spot",
 					},
 				},
 			},
 		},
 		{
 			"$addFields": bson.M{
-				"dealerId": "$dealerId.dealer",
+				"dealerObject": "$dealerObject.dealerObject",
+				"dealerId":     "$dealerObject.dealer",
 			},
 		},
 		{
