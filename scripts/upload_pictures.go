@@ -17,6 +17,7 @@ func UploadPictures(storage *storage.Storage, car database.Car, createCarInput *
 	mainPicture, err := storage.Upload(car.MainPicture)
 
 	if err != nil {
+		log.Print("Retrying upload main picture... for car: " + car.Id)
 		retry := 5
 		for retry > 0 {
 			mainPicture, err = storage.Upload(car.MainPicture)
@@ -26,6 +27,7 @@ func UploadPictures(storage *storage.Storage, car database.Car, createCarInput *
 			}
 
 			if retry < 3 {
+				utils.CleanDns()
 				result := storage.RestartConnection()
 				if result != nil {
 					log.Println("Error restarting connection to storage")

@@ -8,6 +8,7 @@ import (
 )
 
 func CleanDns() {
+	log.Print("Cleaning DNS")
 	commands := []string{
 		"sudo sysctl net.ipv6.conf.all.disable_ipv6=1",
 		"sudo systemd-resolve --flush-caches",
