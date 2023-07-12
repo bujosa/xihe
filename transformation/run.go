@@ -1,7 +1,7 @@
 package transformation
 
 func RunDealerTransformation() {
-	// InitDealerTransformation()
+	InitDealerTransformation()
 	DealerTransformation()
 }
 
