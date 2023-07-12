@@ -1,11 +1,13 @@
 package transformation
 
-func RunDealerTransformation() {
-	InitDealerTransformation()
-	DealerTransformation()
+import "context"
+
+func RunDealerTransformation(ctx context.Context) {
+	InitDealerTransformation(ctx)
+	DealerTransformation(ctx)
 }
 
-func RunCarTransformation() {
+func RunCarTransformation(ctx context.Context) {
 	// Before running section dealer run this Make sure you run dealer script before
 	// Brand()
 	// BrandToModel("Lexus", " ", "")
@@ -13,5 +15,5 @@ func RunCarTransformation() {
 	// Model()
 	// Trim()
 	// Color()
-	DealerIntoCarTransformation()
+	DealerIntoCarTransformation(ctx)
 }

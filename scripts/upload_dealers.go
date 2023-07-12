@@ -1,6 +1,7 @@
 package scripts
 
 import (
+	"context"
 	"log"
 	"time"
 
@@ -11,15 +12,16 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func UploadDealers() {
+func UploadDealers(ctx context.Context) {
 	// Get dealers from database
 	log.Println("Starting dealer upload...")
-	dealers := database.GetDealers()
 
 	geoCode, err := env.GetString("GEOCODE")
 	if err != nil {
 		panic(err)
 	}
+
+	dealers := database.GetDealers(ctx)
 
 	// Upload dealers to api
 	for _, dealer := range dealers {
@@ -40,7 +42,7 @@ func UploadDealers() {
 			TelephoneNumber: dealer.TelephoneNumberSanitized,
 		}
 
-		newDealer, err := api.CreateDealer(createDealerInput, dealer.Id)
+		newDealer, err := api.CreateDealer(ctx, createDealerInput, dealer.Id)
 		if err == "failed" {
 			continue
 		}
@@ -55,7 +57,7 @@ func UploadDealers() {
 			},
 		}
 
-		database.UpdateDealer(updateDealerInfo)
+		database.UpdateDealer(ctx, updateDealerInfo)
 
 		time.Sleep(3 * time.Second)
 	}

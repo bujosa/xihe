@@ -2,27 +2,23 @@ package transformation
 
 import (
 	"context"
+	"log"
 
-	"github.com/bujosa/xihe/env"
 	"github.com/bujosa/xihe/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+func BaseTransformation(ctx context.Context, pipeline []bson.M, collection string, database string) {
+	dbUri := ctx.Value(utils.DbUri).(string)
 
-
-func BaseTransformation(pipeline []bson.M, collection string, database string) {
-	dbUri, err := env.GetString(utils.DB_URL_ENV_KEY)
-	if err != nil {
-		panic(err)
-	}
-	
 	// Set up the client and connect to the database.
-	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(
 		dbUri,
 	))
 	if err != nil {
+		log.Println("Error connecting to database: " + dbUri)
 		panic(err)
 	}
 
@@ -31,15 +27,17 @@ func BaseTransformation(pipeline []bson.M, collection string, database string) {
 	coll := db.Collection(collection)
 
 	// Execute the aggregation.
-	cursor, err := coll.Aggregate(context.TODO(), pipeline)
+	cursor, err := coll.Aggregate(ctx, pipeline)
 	if err != nil {
+		log.Println("Error executing aggregation: " + err.Error())
 		panic(err)
 	}
 
-	for cursor.Next(context.TODO()) {
+	for cursor.Next(ctx) {
 		var doc bson.D
 		err := cursor.Decode(&doc)
 		if err != nil {
+			log.Println("Error decoding document: " + err.Error())
 			panic(err)
 		}
 	}

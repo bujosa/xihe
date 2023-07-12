@@ -1,6 +1,7 @@
 package transformation
 
 import (
+	"context"
 	"log"
 
 	"github.com/bujosa/xihe/database"
@@ -9,17 +10,19 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func InitDealerTransformation() {
+func InitDealerTransformation(ctx context.Context) {
 	log.Println("Init dealer transformation...")
 
-	dealers := database.GetDealers()
+	dealers := database.GetDealers(ctx)
+
+	geoCode, err := env.GetString("GEOCODE")
+	if err != nil {
+		log.Print("Error getting GEOCODE env variable")
+		panic(err)
+	}
 
 	for _, dealer := range dealers {
 		slug := utils.Slug([]string{dealer.Name})
-		geoCode, err := env.GetString("GEOCODE")
-		if err != nil {
-			panic(err)
-		}
 
 		lat, lng, _ := utils.Geocode(geoCode + " " + dealer.Address)
 
@@ -32,24 +35,18 @@ func InitDealerTransformation() {
 			},
 		}
 
-		database.UpdateDealer(updateDealerInfo)
+		database.UpdateDealer(ctx, updateDealerInfo)
 	}
 
 	log.Println("Dealer transformation finished!")
 }
 
-func DealerTransformation() {
+func DealerTransformation(ctx context.Context) {
 	log.Println("Starting Dealer transformation...")
 
-	city, err := env.GetString("CITY_ID")
-	if err != nil {
-		panic(err)
-	}
+	city := ctx.Value(utils.CityId).(string)
 
-	spot, err := env.GetString("SPOT_ID")
-	if err != nil {
-		panic(err)
-	}
+	spot := ctx.Value(utils.SpotId).(string)
 
 	pipeline := []bson.M{
 		{
@@ -166,10 +163,10 @@ func DealerTransformation() {
 			"$out": utils.DEALERS_COLLECTION,
 		},
 	}
-	BaseTransformation(pipeline, utils.DEALERS_COLLECTION, utils.DATABASE)
+	BaseTransformation(ctx, pipeline, utils.DEALERS_COLLECTION, utils.DATABASE)
 }
 
-func DealerIntoCarTransformation() {
+func DealerIntoCarTransformation(ctx context.Context) {
 	log.Println("Starting Dealer into Car transformation...")
 
 	pipeline := []bson.M{
@@ -213,5 +210,5 @@ func DealerIntoCarTransformation() {
 			},
 		},
 	}
-	BaseTransformation(pipeline, utils.CARS_PROCESSED_COLLECTION, utils.DATABASE)
+	BaseTransformation(ctx, pipeline, utils.CARS_PROCESSED_COLLECTION, utils.DATABASE)
 }

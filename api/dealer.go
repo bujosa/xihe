@@ -2,11 +2,11 @@ package api
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"log"
 	"net/http"
 
-	"github.com/bujosa/xihe/env"
 	"github.com/bujosa/xihe/utils"
 )
 
@@ -30,17 +30,11 @@ type CreateDealerResponse struct {
 	} `json:"data"`
 }
 
-func CreateDealer(createDealerInput CreateDealerInput, id string) (Dealer, utils.StatusRequest) {
+func CreateDealer(ctx context.Context, createDealerInput CreateDealerInput, id string) (Dealer, utils.StatusRequest) {
 	log.Println("Creating dealer... with ID: " + id)
 
-	url, err := env.GetString("PRODUCTION_API_URL")
-	if err != nil {
-		panic(err)
-	}
-	token, err := env.GetString("SESSION_SECRET")
-	if err != nil {
-		panic(err)
-	}
+	url := ctx.Value(utils.ProductionApiUrl).(string)
+	token := ctx.Value(utils.SessionSecret).(string)
 
 	mutation := `
 		mutation CreateDealer($input: CreateDealerInput!) {
@@ -77,14 +71,6 @@ func CreateDealer(createDealerInput CreateDealerInput, id string) (Dealer, utils
 		return Dealer{}, utils.StatusRequest("failed")
 	}
 	defer response.Body.Close()
-
-	// responseReader := response.Body
-	// body, err := ioutil.ReadAll(responseReader)
-	// if err != nil {
-	// 	log.Printf("Error reading response body %s\n", err)
-	// 	return Dealer{}, utils.StatusRequest("failed")
-	// }
-	// log.Println(string(body))
 
 	var responseData CreateDealerResponse
 

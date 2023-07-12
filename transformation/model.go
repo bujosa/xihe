@@ -1,6 +1,7 @@
 package transformation
 
 import (
+	"context"
 	"log"
 
 	"github.com/bujosa/xihe/utils"
@@ -9,7 +10,7 @@ import (
 
 const MODEL_SOURCE = "models"
 
-func Model() {
+func Model(ctx context.Context) {
 	log.Print("Starting model transformation... \n")
 
 	pipeline := []bson.M{
@@ -65,5 +66,5 @@ func Model() {
 		{"$out": utils.CARS_PROCESSED_COLLECTION},
 	}
 
-	BaseTransformation(pipeline, utils.CARS_PROCESSED_COLLECTION, utils.DATABASE)
+	BaseTransformation(ctx, pipeline, utils.CARS_PROCESSED_COLLECTION, utils.DATABASE)
 }

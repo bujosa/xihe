@@ -20,9 +20,10 @@ func (err *ErrEnvNotSet) Error() string {
 func GetString(key string) (string, error) {
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Print("Error loading .env file")
+		return "", err
 	}
-	
+
 	value := os.Getenv(key)
 
 	if value == "" {

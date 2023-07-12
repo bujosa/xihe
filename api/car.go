@@ -2,11 +2,11 @@ package api
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"log"
 	"net/http"
 
-	"github.com/bujosa/xihe/env"
 	"github.com/bujosa/xihe/utils"
 )
 
@@ -45,17 +45,11 @@ type CreateCarResponse struct {
 	} `json:"data"`
 }
 
-func CreateCar(createCarInput CreateCarInput, id string) (Car, utils.StatusRequest) {
+func CreateCar(ctx context.Context, createCarInput CreateCarInput, id string) (Car, utils.StatusRequest) {
 	log.Println("Creating car... with ID: " + id)
 
-	url, err := env.GetString("PRODUCTION_API_URL")
-	if err != nil {
-		panic(err)
-	}
-	token, err := env.GetString("SESSION_SECRET")
-	if err != nil {
-		panic(err)
-	}
+	url := ctx.Value(utils.ProductionApiUrl).(string)
+	token := ctx.Value(utils.SessionSecret).(string)
 
 	mutation := `
 		mutation CreateCar($input: CreateCarInput!) {

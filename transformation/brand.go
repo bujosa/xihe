@@ -1,6 +1,7 @@
 package transformation
 
 import (
+	"context"
 	"log"
 
 	"github.com/bujosa/xihe/utils"
@@ -9,7 +10,7 @@ import (
 
 const BRAND_SOURCE = "brands"
 
-func Brand() {
+func Brand(ctx context.Context) {
 	log.Print("Starting brand transformation...\n")
 
 	pipeline := []bson.M{
@@ -126,10 +127,10 @@ func Brand() {
 			"$out": utils.CARS_PROCESSED_COLLECTION,
 		},
 	}
-	BaseTransformation(pipeline, utils.CARS_NON_PROCESSED_COLLECTION, utils.DATABASE)
+	BaseTransformation(ctx, pipeline, utils.CARS_NON_PROCESSED_COLLECTION, utils.DATABASE)
 }
 
-func BrandToModel(regex string, find string, replacement string) {
+func BrandToModel(ctx context.Context, regex string, find string, replacement string) {
 	log.Print("Starting brand to model transformation... with regex: " + regex + " find: " + find + " replacement: " + replacement + "\n")
 
 	pipeline := []bson.M{
@@ -161,5 +162,5 @@ func BrandToModel(regex string, find string, replacement string) {
 		},
 	}
 
-	BaseTransformation(pipeline, utils.CARS_PROCESSED_COLLECTION, utils.DATABASE)
+	BaseTransformation(ctx, pipeline, utils.CARS_PROCESSED_COLLECTION, utils.DATABASE)
 }

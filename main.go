@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"log"
 	"os"
@@ -8,9 +9,11 @@ import (
 
 	"github.com/bujosa/xihe/scripts"
 	"github.com/bujosa/xihe/transformation"
+	"github.com/bujosa/xihe/utils"
 )
 
 func main() {
+	// Create log file with timestamp
 	logName := "./logs/log_" + time.Now().Format("2006_01_02_15_04") + ".txt"
 	logFile, err := os.OpenFile(logName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
@@ -19,7 +22,11 @@ func main() {
 	defer logFile.Close()
 
 	log.SetOutput(logFile)
+	// Load environment variables in context
+	ctx := context.Background()
+	utils.LoadEnvs(&ctx)
 
+	// Define flags
 	var transformationCommand string
 	var uploadCommand string
 	var helpFlag bool
@@ -37,16 +44,16 @@ func main() {
 	}
 
 	if transformationCommand == "dealers" {
-		transformation.RunDealerTransformation()
+		transformation.RunDealerTransformation(ctx)
 	} else if transformationCommand == "cars" {
-		transformation.RunCarTransformation()
+		transformation.RunCarTransformation(ctx)
 	}
 
 	if uploadCommand == "dealers" {
-		scripts.UploadDealers()
+		scripts.UploadDealers(ctx)
 	} else if uploadCommand == "cars" {
-		scripts.TrimMatchingStrategy(false)
+		scripts.TrimMatchingStrategy(ctx, false)
 	} else if uploadCommand == "cars published" {
-		scripts.TrimMatchingStrategy(true)
+		scripts.TrimMatchingStrategy(ctx, true)
 	}
 }

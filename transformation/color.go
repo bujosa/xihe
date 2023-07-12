@@ -1,6 +1,7 @@
 package transformation
 
 import (
+	"context"
 	"log"
 
 	"github.com/bujosa/xihe/utils"
@@ -9,7 +10,7 @@ import (
 
 const COLORS_SOURCE = "colors"
 
-func Color() {
+func Color(ctx context.Context) {
 	log.Print("Starting color transformation... \n")
 
 	pipeline := []bson.M{
@@ -139,5 +140,5 @@ func Color() {
 		},
 	}
 
-	BaseTransformation(pipeline, utils.CARS_PROCESSED_COLLECTION, utils.DATABASE)
+	BaseTransformation(ctx, pipeline, utils.CARS_PROCESSED_COLLECTION, utils.DATABASE)
 }

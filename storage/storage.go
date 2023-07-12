@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"cloud.google.com/go/storage"
-	"github.com/bujosa/xihe/env"
+	"github.com/bujosa/xihe/utils"
 )
 
 type Storage struct {
@@ -20,26 +20,11 @@ type Storage struct {
 	context       context.Context
 }
 
-func New() *Storage {
-	projectId, err := env.GetString("GOOGLE_PROJECT_ID")
-	if err != nil {
-		panic(err)
-	}
-	bucketName, err := env.GetString("GOOGLE_BUCKET_NAME")
-	if err != nil {
-		panic(err)
-	}
-	_, err = env.GetString("GOOGLE_APPLICATION_CREDENTIALS")
-	if err != nil {
-		panic(err)
-	}
+func New(ctx context.Context) *Storage {
+	projectId := ctx.Value(utils.ProjectIdKey).(string)
+	bucketName := ctx.Value(utils.BucketNameKey).(string)
+	subFolderPath := ctx.Value(utils.SubFolderPathKey).(string)
 
-	subFolderPath, err := env.GetString("GOOGLE_SUBFOLDER_PATH")
-	if err != nil {
-		subFolderPath = ""
-	}
-
-	ctx := context.Background()
 	client, err := storage.NewClient(ctx)
 	if err != nil {
 		panic(err)

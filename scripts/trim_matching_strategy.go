@@ -1,38 +1,32 @@
 package scripts
 
 import (
+	"context"
 	"log"
 	"time"
 
 	"github.com/bujosa/xihe/api"
 	"github.com/bujosa/xihe/database"
-	"github.com/bujosa/xihe/env"
 	"github.com/bujosa/xihe/storage"
 	"github.com/bujosa/xihe/utils"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func TrimMatchingStrategy(dealerPublished bool) {
+func TrimMatchingStrategy(ctx context.Context, dealerPublished bool) {
 	log.Println("Starting Trim Matching Strategy...")
 
-	countryVersion, err := env.GetString("COUNTRY_VERSION_ID")
-	if err != nil {
-		panic(err)
-	}
+	countryVersion := ctx.Value(utils.CountryVersionId).(string)
 
-	category, err := env.GetString("CATEGORY_ID")
-	if err != nil {
-		panic(err)
-	}
+	category := ctx.Value(utils.CategoryId).(string)
 
-	storage := storage.New()
+	storage := storage.New(ctx)
 
 	var cars []database.Car
 
 	if dealerPublished {
-		cars = database.GetCarsWithPublishDealers()
+		cars = database.GetCarsWithPublishDealers(ctx)
 	} else {
-		cars = database.GetCars()
+		cars = database.GetCars(ctx)
 	}
 
 	for _, car := range cars {
@@ -77,7 +71,7 @@ func TrimMatchingStrategy(dealerPublished bool) {
 			createCarInput.Mileage = 1
 		}
 
-		carUploaded, status := api.CreateCar(createCarInput, car.Id)
+		carUploaded, status := api.CreateCar(ctx, createCarInput, car.Id)
 
 		updateCarInfo := database.UpdateCarInfo{
 			Car: car,
@@ -94,13 +88,13 @@ func TrimMatchingStrategy(dealerPublished bool) {
 
 		if status != "success" {
 			log.Println("Error creating car: " + car.Id)
-			database.UpdateCar(updateCarInfo)
+			database.UpdateCar(ctx, updateCarInfo)
 			time.Sleep(4 * time.Second)
 			continue
 		}
 
 		updateCarInfo.Set["uploaded"] = true
-		database.UpdateCar(updateCarInfo)
+		database.UpdateCar(ctx, updateCarInfo)
 		time.Sleep(4 * time.Second)
 	}
 }

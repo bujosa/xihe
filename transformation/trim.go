@@ -1,6 +1,7 @@
 package transformation
 
 import (
+	"context"
 	"log"
 
 	"github.com/bujosa/xihe/utils"
@@ -9,7 +10,7 @@ import (
 
 const TRIM_SOURCE = "trimlevels"
 
-func Trim() {
+func Trim(ctx context.Context) {
 	log.Print("Starting trim transformation... \n")
 
 	pipeline := []bson.M{
@@ -104,5 +105,5 @@ func Trim() {
 		},
 	}
 
-	BaseTransformation(pipeline, utils.CARS_PROCESSED_COLLECTION, utils.DATABASE)
+	BaseTransformation(ctx, pipeline, utils.CARS_PROCESSED_COLLECTION, utils.DATABASE)
 }
