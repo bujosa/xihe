@@ -7,6 +7,7 @@ import (
 	"github.com/bujosa/xihe/api"
 	"github.com/bujosa/xihe/database"
 	"github.com/bujosa/xihe/storage"
+	"github.com/bujosa/xihe/utils"
 )
 
 func UploadPictures(storage *storage.Storage, car database.Car, createCarInput *api.CreateCarInput) error {
@@ -28,8 +29,6 @@ func UploadPictures(storage *storage.Storage, car database.Car, createCarInput *
 				result := storage.RestartConnection()
 				if result != nil {
 					log.Println("Error restarting connection to storage")
-					retry--
-					continue
 				}
 			}
 
@@ -57,6 +56,7 @@ func UploadPictures(storage *storage.Storage, car database.Car, createCarInput *
 				}
 
 				if retry < 3 {
+					utils.CleanDns()
 					result := storage.RestartConnection()
 					if result != nil {
 						log.Println("Error restarting connection to storage")
