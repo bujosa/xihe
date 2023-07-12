@@ -20,6 +20,7 @@ const (
 	SessionSecret    ContextKey = "sessionSecret"
 	CityId           ContextKey = "cityId"
 	SpotId           ContextKey = "spotId"
+	ErrorCount       ContextKey = "errorCount"
 )
 
 func LoadEnvs(ctx *context.Context) {
@@ -87,4 +88,5 @@ func LoadEnvs(ctx *context.Context) {
 	*ctx = context.WithValue(*ctx, SessionSecret, token)
 	*ctx = context.WithValue(*ctx, CityId, city)
 	*ctx = context.WithValue(*ctx, SpotId, spot)
+	*ctx = context.WithValue(*ctx, ErrorCount, 0)
 }

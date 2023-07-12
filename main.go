@@ -62,3 +62,7 @@ func main() {
 		scripts.TrimMatchingStrategy(ctx, true)
 	}
 }
+
+func ReRunMatchingStrategy(ctx context.Context) {
+	scripts.TrimMatchingStrategy(ctx, false)
+}

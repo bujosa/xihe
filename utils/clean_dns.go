@@ -2,6 +2,7 @@ package utils
 
 import (
 	"log"
+	"net/http"
 	"os"
 	"os/exec"
 	"strings"
@@ -22,4 +23,6 @@ func CleanDns() {
 	if err != nil {
 		log.Println("Error restarting the system", err)
 	}
+
+	http.DefaultTransport.(*http.Transport).CloseIdleConnections()
 }
