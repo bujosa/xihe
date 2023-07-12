@@ -47,9 +47,7 @@ func GetCars() []Car {
 		Match: bson.M{
 			"trimMatched": true,
 			"uploaded":    false,
-			"success": bson.M{
-				"$ne": "failed",
-			},
+			"status":      bson.M{"$ne": "failed"},
 		},
 	}
 
