@@ -14,6 +14,8 @@ func TestSlug(t *testing.T) {
 		{"This is a Test", "this-is-a-test"},
 		{"Guelo Motors, SRL", "guelo-motors,-srl"},
 		{"", ""},
+		{"Ismael Cruz Automóviles", "ismael-cruz-automoviles"},
+		{"Gold`S Brothers Auto ", "gold`s-brothers-auto"},
 	}
 
 	for _, test := range tests {
