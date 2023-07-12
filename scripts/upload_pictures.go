@@ -28,6 +28,7 @@ func UploadPictures(storage *storage.Storage, car database.Car, createCarInput *
 				result := storage.RestartConnection()
 				if result != nil {
 					log.Println("Error restarting connection to storage")
+					retry--
 					continue
 				}
 			}
@@ -59,7 +60,6 @@ func UploadPictures(storage *storage.Storage, car database.Car, createCarInput *
 					result := storage.RestartConnection()
 					if result != nil {
 						log.Println("Error restarting connection to storage")
-						continue
 					}
 				}
 
