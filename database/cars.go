@@ -5,7 +5,6 @@ import (
 	"log"
 	"time"
 
-	"github.com/bujosa/xihe/env"
 	"github.com/bujosa/xihe/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -42,7 +41,7 @@ type Filter struct {
 	Match bson.M `bson:"$match"`
 }
 
-func GetCars() []Car {
+func GetCars(ctx context.Context) []Car {
 	filter := Filter{
 		Match: bson.M{
 			"trimMatched": true,
@@ -51,22 +50,20 @@ func GetCars() []Car {
 		},
 	}
 
-	return BaseGetCars(filter)
+	return BaseGetCars(ctx, filter)
 }
 
-func UpdateCar(updateCarInfo UpdateCarInfo) {
+func UpdateCar(ctx context.Context, updateCarInfo UpdateCarInfo) {
 	log.Println("Updating car: " + updateCarInfo.Car.Id)
 
-	dbUri, err := env.GetString(utils.DB_URL_ENV_KEY)
-	if err != nil {
-		panic(err)
-	}
+	dbUri := ctx.Value(utils.DbUri).(string)
 
-	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(
 		dbUri,
 	))
 	if err != nil {
-		panic(err)
+		log.Println("Error connecting to database: " + dbUri)
+		return
 	}
 
 	db := client.Database(utils.DATABASE)
@@ -108,7 +105,7 @@ func UpdateCar(updateCarInfo UpdateCarInfo) {
 	log.Println("Updated car: " + updateCarInfo.Car.Id)
 }
 
-func GetCarsWithPublishDealers() []Car {
+func GetCarsWithPublishDealers(ctx context.Context) []Car {
 
 	filter := Filter{
 		Match: bson.M{
@@ -119,19 +116,17 @@ func GetCarsWithPublishDealers() []Car {
 		},
 	}
 
-	return BaseGetCars(filter)
+	return BaseGetCars(ctx, filter)
 }
 
-func BaseGetCars(filter Filter) []Car {
-	dbUri, err := env.GetString(utils.DB_URL_ENV_KEY)
-	if err != nil {
-		panic(err)
-	}
+func BaseGetCars(ctx context.Context, filter Filter) []Car {
+	dbUri := ctx.Value(utils.DbUri).(string)
 
 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(
 		dbUri,
 	))
 	if err != nil {
+		log.Println("Error connecting to database ")
 		panic(err)
 	}
 
@@ -171,18 +166,19 @@ func BaseGetCars(filter Filter) []Car {
 		},
 	}
 
-	cursor, err := coll.Aggregate(context.TODO(), pipeline)
+	cursor, err := coll.Aggregate(ctx, pipeline)
 	if err != nil {
+		log.Println("Error getting cars from database")
 		panic(err)
 	}
 
 	cars := []Car{}
 
-	for cursor.Next(context.TODO()) {
+	for cursor.Next(ctx) {
 		var doc Car
 		err := cursor.Decode(&doc)
 		if err != nil {
-			log.Println(err)
+			log.Println("Error decoding car with error: " + err.Error())
 			panic(err)
 		}
 		cars = append(cars, doc)

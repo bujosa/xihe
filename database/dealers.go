@@ -5,7 +5,6 @@ import (
 	"log"
 	"time"
 
-	"github.com/bujosa/xihe/env"
 	"github.com/bujosa/xihe/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -31,17 +30,15 @@ type UpdateDealerInfo struct {
 	Set bson.M `bson:"$set"`
 }
 
-func GetDealers() []Dealer {
-	dbUri, err := env.GetString(utils.DB_URL_ENV_KEY)
-	if err != nil {
-		panic(err)
-	}
+func GetDealers(ctx context.Context) []Dealer {
+	dbUri := ctx.Value(utils.DbUri).(string)
 
-	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(
 		dbUri,
 	))
 	if err != nil {
-		panic(err)
+		log.Println("Error connecting to database: " + dbUri)
+		return nil
 	}
 
 	db := client.Database(utils.DATABASE)
@@ -89,19 +86,17 @@ func GetDealers() []Dealer {
 	return dealers
 }
 
-func UpdateDealer(updateDealerInfo UpdateDealerInfo) {
+func UpdateDealer(ctx context.Context, updateDealerInfo UpdateDealerInfo) {
 	log.Println("Updating dealer: " + updateDealerInfo.Id)
 
-	dbUri, err := env.GetString(utils.DB_URL_ENV_KEY)
-	if err != nil {
-		panic(err)
-	}
+	dbUri := ctx.Value(utils.DbUri).(string)
 
-	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(
 		dbUri,
 	))
 	if err != nil {
-		panic(err)
+		log.Println("Error connecting to database: " + dbUri)
+		return
 	}
 
 	db := client.Database(utils.DATABASE)
@@ -124,6 +119,7 @@ func UpdateDealer(updateDealerInfo UpdateDealerInfo) {
 	_, err = coll.UpdateOne(context.Background(), filter, update)
 	if err != nil {
 		log.Print("Error updating dealer: " + updateDealerInfo.Id)
+		return
 	}
 
 	log.Println("Updated dealer: " + updateDealerInfo.Id)
