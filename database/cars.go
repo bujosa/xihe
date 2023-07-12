@@ -41,84 +41,6 @@ type Filter struct {
 	Match bson.M `bson:"$match"`
 }
 
-func GetCars(ctx context.Context) []Car {
-	filter := Filter{
-		Match: bson.M{
-			"trimMatched": true,
-			"uploaded":    false,
-			"status":      bson.M{"$ne": "failed"},
-		},
-	}
-
-	return BaseGetCars(ctx, filter)
-}
-
-func UpdateCar(ctx context.Context, updateCarInfo UpdateCarInfo) {
-	log.Println("Updating car: " + updateCarInfo.Car.Id)
-
-	dbUri := ctx.Value(utils.DbUri).(string)
-
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI(
-		dbUri,
-	))
-	if err != nil {
-		log.Println("Error connecting to database: " + dbUri)
-		return
-	}
-
-	db := client.Database(utils.DATABASE)
-	coll := db.Collection(utils.CARS_PROCESSED_COLLECTION)
-
-	objectId, err := utils.ToObjectId(updateCarInfo.Car.Id)
-	if err != nil {
-		log.Println("Error converting id to ObjectId: " + updateCarInfo.Car.Id)
-		return
-	}
-
-	filter := bson.M{"_id": objectId}
-	update := bson.M{
-		"$set": updateCarInfo.Set,
-	}
-
-	update["$set"].(bson.M)["updatedAt"] = time.Now().UTC()
-
-	_, err = coll.UpdateOne(context.Background(), filter, update)
-	if err != nil {
-		maxRetries := 3
-		retryInterval := time.Second * 3
-
-		for i := 0; i < maxRetries; i++ {
-			_, err = coll.UpdateOne(context.Background(), filter, update)
-			if err == nil {
-				log.Println("Updated car: " + updateCarInfo.Car.Id)
-				return
-			}
-
-			log.Printf("Error updating car: %s. Retrying in %s...", updateCarInfo.Car.Id, retryInterval)
-			log.Printf("Error: %s with %s", err, update)
-			time.Sleep(retryInterval)
-		}
-
-		log.Println("Failed to update car after multiple attempts")
-		return
-	}
-	log.Println("Updated car: " + updateCarInfo.Car.Id)
-}
-
-func GetCarsWithPublishDealers(ctx context.Context) []Car {
-
-	filter := Filter{
-		Match: bson.M{
-			"trimMatched":         true,
-			"uploaded":            false,
-			"dealerObject.status": "PUBLISHED",
-			"status":              bson.M{"$ne": "failed"},
-		},
-	}
-
-	return BaseGetCars(ctx, filter)
-}
-
 func BaseGetCars(ctx context.Context, filter Filter) []Car {
 	dbUri := ctx.Value(utils.DbUri).(string)
 
@@ -185,4 +107,83 @@ func BaseGetCars(ctx context.Context, filter Filter) []Car {
 	}
 
 	return cars
+}
+
+func GetCars(ctx context.Context) []Car {
+	filter := Filter{
+		Match: bson.M{
+			"trimMatched": true,
+			"uploaded":    false,
+			"status":      bson.M{"$ne": "failed"},
+		},
+	}
+
+	return BaseGetCars(ctx, filter)
+}
+
+func GetCarsWithPublishDealers(ctx context.Context) []Car {
+
+	filter := Filter{
+		Match: bson.M{
+			"trimMatched":         true,
+			"uploaded":            false,
+			"dealerObject.status": "PUBLISHED",
+			"status":              bson.M{"$ne": "failed"},
+		},
+	}
+
+	return BaseGetCars(ctx, filter)
+}
+
+func UpdateCar(ctx context.Context, updateCarInfo UpdateCarInfo) bool {
+	log.Println("Updating car: " + updateCarInfo.Car.Id)
+
+	dbUri := ctx.Value(utils.DbUri).(string)
+
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(
+		dbUri,
+	))
+	if err != nil {
+		log.Println("Error connecting to database: " + dbUri)
+		return false
+	}
+
+	db := client.Database(utils.DATABASE)
+	coll := db.Collection(utils.CARS_PROCESSED_COLLECTION)
+
+	objectId, err := utils.ToObjectId(updateCarInfo.Car.Id)
+	if err != nil {
+		log.Println("Error converting id to ObjectId: " + updateCarInfo.Car.Id)
+		return false
+	}
+
+	filter := bson.M{"_id": objectId}
+	update := bson.M{
+		"$set": updateCarInfo.Set,
+	}
+
+	update["$set"].(bson.M)["updatedAt"] = time.Now().UTC()
+
+	_, err = coll.UpdateOne(context.Background(), filter, update)
+	if err != nil {
+		maxRetries := 3
+		retryInterval := time.Second * 3
+
+		for i := 0; i < maxRetries; i++ {
+			_, err = coll.UpdateOne(context.Background(), filter, update)
+			if err == nil {
+				log.Println("Updated car: " + updateCarInfo.Car.Id)
+				return true
+			}
+
+			log.Printf("Error updating car: %s. Retrying in %s...", updateCarInfo.Car.Id, retryInterval)
+			log.Printf("Error: %s with %s", err, update)
+			time.Sleep(retryInterval)
+		}
+
+		log.Println("Failed to update car after multiple attempts")
+		return false
+	}
+	log.Println("Updated car: " + updateCarInfo.Car.Id)
+	return true
 }

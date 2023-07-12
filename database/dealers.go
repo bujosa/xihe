@@ -66,18 +66,19 @@ func GetDealers(ctx context.Context) []Dealer {
 		},
 	}
 
-	cursor, err := coll.Aggregate(context.TODO(), pipeline)
+	cursor, err := coll.Aggregate(ctx, pipeline)
 	if err != nil {
+		log.Println("Error getting dealers")
 		panic(err)
 	}
 
 	dealers := []Dealer{}
 
-	for cursor.Next(context.TODO()) {
+	for cursor.Next(ctx) {
 		var doc Dealer
 		err := cursor.Decode(&doc)
 		if err != nil {
-			log.Println(err)
+			log.Println("Error decoding dealer with error " + err.Error())
 			panic(err)
 		}
 		dealers = append(dealers, doc)
