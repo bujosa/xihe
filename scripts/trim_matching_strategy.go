@@ -65,6 +65,7 @@ func TrimMatchingStrategy(ctx context.Context, dealerPublished bool) {
 			err := UploadPictures(storage, car, &createCarInput)
 			if err != nil {
 				log.Println("Error uploading pictures for car: " + car.Id)
+				time.Sleep(5 * time.Second)
 				continue
 			}
 		} else {
@@ -96,7 +97,7 @@ func TrimMatchingStrategy(ctx context.Context, dealerPublished bool) {
 			if !result {
 				missingUpdatedCars = append(missingUpdatedCars, updateCarInfo)
 			}
-			time.Sleep(4 * time.Second)
+			time.Sleep(5 * time.Second)
 			continue
 		}
 
@@ -105,7 +106,7 @@ func TrimMatchingStrategy(ctx context.Context, dealerPublished bool) {
 		if !result {
 			missingUpdatedCars = append(missingUpdatedCars, updateCarInfo)
 		}
-		time.Sleep(4 * time.Second)
+		time.Sleep(5 * time.Second)
 	}
 
 	if len(missingUpdatedCars) > 0 {
