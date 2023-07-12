@@ -39,7 +39,7 @@ func New(ctx context.Context) *Storage {
 	}
 }
 
-func (s Storage) Upload(url string) (string, error) {
+func (s *Storage) Upload(url string) (string, error) {
 	log.Print("Upload Picture with url: ", url)
 
 	url = strings.Replace(url, "800x600", "500x500", 1)
@@ -79,7 +79,7 @@ func (s Storage) Upload(url string) (string, error) {
 	return formatUrl, nil
 }
 
-func (s Storage) AlreadyExist(url string) bool {
+func (s *Storage) AlreadyExist(url string) bool {
 	isValid := s.validate(url)
 
 	if !isValid {
@@ -98,11 +98,22 @@ func (s Storage) AlreadyExist(url string) bool {
 	}
 }
 
-func (s Storage) validate(url string) bool {
+func (s *Storage) validate(url string) bool {
 	_, err := http.Get(url)
 	if err != nil {
 		fmt.Println(err)
 		return false
 	}
 	return true
+}
+
+func (s *Storage) RestartConnection() error {
+	client, err := storage.NewClient(s.context)
+	if err != nil {
+		return err
+	}
+
+	s.bucket = client.Bucket(s.bucketName)
+
+	return nil
 }

@@ -16,15 +16,23 @@ func UploadPictures(storage *storage.Storage, car database.Car, createCarInput *
 	mainPicture, err := storage.Upload(car.MainPicture)
 
 	if err != nil {
-		retry := 0
-		for retry < 5 {
+		retry := 5
+		for retry > 0 {
 			mainPicture, err = storage.Upload(car.MainPicture)
 
 			if err == nil {
 				break
 			}
 
-			retry++
+			if retry < 3 {
+				result := storage.RestartConnection()
+				if result != nil {
+					log.Println("Error restarting connection to storage")
+					continue
+				}
+			}
+
+			retry--
 			time.Sleep(time.Duration(retry) * time.Second)
 		}
 
@@ -39,15 +47,23 @@ func UploadPictures(storage *storage.Storage, car database.Car, createCarInput *
 		newPicture, err := storage.Upload(picture)
 
 		if err != nil {
-			retry := 0
-			for retry < 5 {
+			retry := 5
+			for retry > 0 {
 				newPicture, err = storage.Upload(picture)
 
 				if err == nil {
 					break
 				}
 
-				retry++
+				if retry < 3 {
+					result := storage.RestartConnection()
+					if result != nil {
+						log.Println("Error restarting connection to storage")
+						continue
+					}
+				}
+
+				retry--
 				time.Sleep(time.Duration(retry) * time.Second)
 			}
 
