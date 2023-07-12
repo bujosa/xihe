@@ -2,7 +2,9 @@ package scripts
 
 import (
 	"context"
+	"io"
 	"log"
+	"os"
 	"time"
 
 	"github.com/bujosa/xihe/api"
@@ -28,6 +30,8 @@ func TrimMatchingStrategy(ctx context.Context, dealerPublished bool) {
 	} else {
 		cars = database.GetCars(ctx)
 	}
+
+	missingUpdatedCars := []database.UpdateCarInfo{}
 
 	for _, car := range cars {
 		log.Println("Car: " + car.Id)
@@ -88,13 +92,64 @@ func TrimMatchingStrategy(ctx context.Context, dealerPublished bool) {
 
 		if status != "success" {
 			log.Println("Error creating car: " + car.Id)
-			database.UpdateCar(ctx, updateCarInfo)
+			result := database.UpdateCar(ctx, updateCarInfo)
+			if !result {
+				missingUpdatedCars = append(missingUpdatedCars, updateCarInfo)
+			}
 			time.Sleep(4 * time.Second)
 			continue
 		}
 
 		updateCarInfo.Set["uploaded"] = true
-		database.UpdateCar(ctx, updateCarInfo)
+		result := database.UpdateCar(ctx, updateCarInfo)
+		if !result {
+			missingUpdatedCars = append(missingUpdatedCars, updateCarInfo)
+		}
 		time.Sleep(4 * time.Second)
 	}
+
+	if len(missingUpdatedCars) > 0 {
+		for i, car := range missingUpdatedCars {
+			result := database.UpdateCar(ctx, car)
+			if !result {
+				log.Println("Error updating car: " + car.Car.Id)
+			} else {
+				log.Println("Car updated: " + car.Car.Id)
+				missingUpdatedCars = append(missingUpdatedCars[:i], missingUpdatedCars[i+1:]...)
+			}
+		}
+	}
+
+	if len(missingUpdatedCars) > 0 {
+		// Add the remaining cars into a output file
+		log.Println("There are " + string(rune(len(missingUpdatedCars))) + " cars that could not be updated")
+
+		nameFile := "error_updating_" + time.Now().Format("2006-01-02_15-04-05") + ".txt"
+		file, err := os.Create("logs/" + nameFile)
+		if err != nil {
+			log.Println("Error creating file:", err)
+			return
+		}
+		defer file.Close()
+
+		log.Println("There are", len(missingUpdatedCars), "cars that could not be updated")
+
+		for _, car := range missingUpdatedCars {
+			data, err := bson.Marshal(car.Set)
+			if err != nil {
+				log.Println("Error marshaling car data:", err)
+				continue
+			}
+
+			line := car.Car.Id + "," + string(data) + "\n"
+			_, err = io.WriteString(file, line)
+			if err != nil {
+				log.Println("Error writing to file:", err)
+				return
+			}
+		}
+
+		log.Println("The list of cars that could not be updated has been saved to error_updating.txt")
+	}
+
 }
