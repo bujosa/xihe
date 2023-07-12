@@ -111,6 +111,9 @@ func CreateCar(createCarInput CreateCarInput, id string) (Car, utils.StatusReque
 	if response.StatusCode != 200 {
 		log.Printf("Error status code %d\n", response.StatusCode)
 		return Car{}, utils.StatusRequest("failed")
+	} else if responseData.Data.CreateCar.Id == "" {
+		log.Printf("Error creating car %s\n", err)
+		return Car{}, utils.StatusRequest("failed")
 	} else {
 		log.Printf("Car created with ID: %s\n", responseData.Data.CreateCar.Id)
 		return responseData.Data.CreateCar, utils.StatusRequest("success")
