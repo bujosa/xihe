@@ -46,7 +46,7 @@ func UploadPictures(storage *storage.Storage, car database.Car, createCarInput *
 		createCarInput.ExteriorPictures = append(createCarInput.ExteriorPictures, newPicture)
 		createCarInput.InteriorPictures = append(createCarInput.InteriorPictures, newPicture)
 
-		time.Sleep(time.Millisecond * 300)
+		time.Sleep(time.Millisecond * 600)
 	}
 
 	return nil
