@@ -5,6 +5,7 @@ import (
 	"flag"
 	"log"
 	"os"
+	"runtime"
 	"time"
 
 	"github.com/bujosa/xihe/scripts"
@@ -13,6 +14,9 @@ import (
 )
 
 func main() {
+	// Go routines
+	runtime.GOMAXPROCS(1)
+
 	// Create log file with timestamp
 	logName := "./logs/log_" + time.Now().Format("2006_01_02_15_04") + ".txt"
 	logFile, err := os.OpenFile(logName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
@@ -22,6 +26,7 @@ func main() {
 	defer logFile.Close()
 
 	log.SetOutput(logFile)
+
 	// Load environment variables in context
 	ctx := context.Background()
 	utils.LoadEnvs(&ctx)
