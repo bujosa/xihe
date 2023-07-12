@@ -25,7 +25,7 @@ func UploadPictures(storage *storage.Storage, car database.Car, createCarInput *
 			}
 
 			retry++
-			time.Sleep(time.Second * 2)
+			time.Sleep(time.Duration(retry) * time.Second)
 		}
 
 		if err != nil {
@@ -39,14 +39,28 @@ func UploadPictures(storage *storage.Storage, car database.Car, createCarInput *
 		newPicture, err := storage.Upload(picture)
 
 		if err != nil {
-			log.Println("Error uploading picture: " + picture)
-			continue
+			retry := 0
+			for retry < 5 {
+				newPicture, err = storage.Upload(picture)
+
+				if err == nil {
+					break
+				}
+
+				retry++
+				time.Sleep(time.Duration(retry) * time.Second)
+			}
+
+			if err != nil {
+				log.Println("Error picture: " + picture)
+				continue
+			}
 		}
 
 		createCarInput.ExteriorPictures = append(createCarInput.ExteriorPictures, newPicture)
 		createCarInput.InteriorPictures = append(createCarInput.InteriorPictures, newPicture)
 
-		time.Sleep(time.Millisecond * 700)
+		time.Sleep(time.Second * 1)
 	}
 
 	return nil
