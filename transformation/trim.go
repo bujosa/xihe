@@ -67,6 +67,7 @@ func Trim(ctx context.Context) {
 							"fuelType":     1,
 							"transmission": 1,
 							"features":     1,
+							"deleted":      1,
 						},
 					},
 				},
