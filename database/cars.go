@@ -44,13 +44,19 @@ type Filter struct {
 func BaseGetCars(ctx context.Context, filter Filter) []Car {
 	dbUri := ctx.Value(utils.DbUri).(string)
 
-	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(
-		dbUri,
-	))
+	client, err := connectWithRetries(ctx, dbUri, 3)
 	if err != nil {
-		log.Println("Error connecting to database ")
-		panic(err)
+		log.Println("Error connecting to the database:", err)
+		return nil
 	}
+
+	defer func() {
+		// Cerrar la conexión al final de la función
+		err := client.Disconnect(ctx)
+		if err != nil {
+			log.Println("Error disconnecting from the database:", err)
+		}
+	}()
 
 	db := client.Database(utils.DATABASE)
 	coll := db.Collection(utils.CARS_PROCESSED_COLLECTION)
@@ -90,9 +96,10 @@ func BaseGetCars(ctx context.Context, filter Filter) []Car {
 
 	cursor, err := coll.Aggregate(ctx, pipeline)
 	if err != nil {
-		log.Println("Error getting cars from database")
-		panic(err)
+		log.Println("Error getting cars from the database:", err)
+		return nil
 	}
+	defer cursor.Close(ctx)
 
 	cars := []Car{}
 
@@ -100,13 +107,30 @@ func BaseGetCars(ctx context.Context, filter Filter) []Car {
 		var doc Car
 		err := cursor.Decode(&doc)
 		if err != nil {
-			log.Println("Error decoding car with error: " + err.Error())
-			panic(err)
+			log.Println("Error decoding car:", err)
+			return nil
 		}
 		cars = append(cars, doc)
 	}
 
 	return cars
+}
+
+func connectWithRetries(ctx context.Context, uri string, maxRetries int) (*mongo.Client, error) {
+	var client *mongo.Client
+	var err error
+
+	for i := 0; i < maxRetries; i++ {
+		client, err = mongo.Connect(ctx, options.Client().ApplyURI(uri))
+		if err == nil {
+			break
+		}
+
+		log.Printf("Error connecting to the database: %v. Retrying in 5 seconds...", err)
+		time.Sleep(5 * time.Second)
+	}
+
+	return client, err
 }
 
 func GetCars(ctx context.Context) []Car {
@@ -148,6 +172,14 @@ func UpdateCar(ctx context.Context, updateCarInfo UpdateCarInfo) bool {
 		return false
 	}
 
+	defer func() {
+		// Cerrar la conexión al final de la función
+		err := client.Disconnect(ctx)
+		if err != nil {
+			log.Println("Error disconnecting from database:", err)
+		}
+	}()
+
 	db := client.Database(utils.DATABASE)
 	coll := db.Collection(utils.CARS_PROCESSED_COLLECTION)
 
@@ -164,26 +196,21 @@ func UpdateCar(ctx context.Context, updateCarInfo UpdateCarInfo) bool {
 
 	update["$set"].(bson.M)["updatedAt"] = time.Now().UTC()
 
-	_, err = coll.UpdateOne(context.Background(), filter, update)
-	if err != nil {
-		maxRetries := 3
-		retryInterval := time.Second * 3
+	maxRetries := 3
+	retryInterval := time.Second * 3
 
-		for i := 0; i < maxRetries; i++ {
-			_, err = coll.UpdateOne(context.Background(), filter, update)
-			if err == nil {
-				log.Println("Updated car: " + updateCarInfo.Car.Id)
-				return true
-			}
-
-			log.Printf("Error updating car: %s. Retrying in %s...", updateCarInfo.Car.Id, retryInterval)
-			log.Printf("Error: %s with %s", err, update)
-			time.Sleep(retryInterval)
+	for i := 0; i < maxRetries; i++ {
+		_, err = coll.UpdateOne(ctx, filter, update)
+		if err == nil {
+			log.Println("Updated car: " + updateCarInfo.Car.Id)
+			return true
 		}
 
-		log.Println("Failed to update car after multiple attempts")
-		return false
+		log.Printf("Error updating car: %s. Retrying in %s...", updateCarInfo.Car.Id, retryInterval)
+		log.Printf("Error: %s with %s", err, update)
+		time.Sleep(retryInterval)
 	}
-	log.Println("Updated car: " + updateCarInfo.Car.Id)
-	return true
+
+	log.Println("Failed to update car after multiple attempts")
+	return false
 }
