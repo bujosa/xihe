@@ -14,10 +14,8 @@ import (
 )
 
 func main() {
-	// Go routines
 	runtime.GOMAXPROCS(1)
 
-	// Create log file with timestamp
 	logName := "./logs/log_" + time.Now().Format("2006_01_02_15_04") + ".txt"
 	logFile, err := os.OpenFile(logName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
@@ -27,11 +25,9 @@ func main() {
 
 	log.SetOutput(logFile)
 
-	// Load environment variables in context
 	ctx := context.Background()
 	utils.LoadEnvs(&ctx)
 
-	// Define flags
 	var transformationCommand string
 	var uploadCommand string
 	var helpFlag bool
@@ -61,8 +57,4 @@ func main() {
 	} else if uploadCommand == "cars published" {
 		scripts.TrimMatchingStrategy(ctx, true)
 	}
-}
-
-func ReRunMatchingStrategy(ctx context.Context) {
-	scripts.TrimMatchingStrategy(ctx, false)
 }

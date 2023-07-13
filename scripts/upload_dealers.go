@@ -13,7 +13,6 @@ import (
 )
 
 func UploadDealers(ctx context.Context) {
-	// Get dealers from database
 	log.Println("Starting dealer upload...")
 
 	geoCode, err := env.GetString("GEOCODE")
@@ -23,7 +22,6 @@ func UploadDealers(ctx context.Context) {
 
 	dealers := database.GetDealers(ctx)
 
-	// Upload dealers to api
 	for _, dealer := range dealers {
 
 		if dealer.TelephoneNumberSanitized == "" {
