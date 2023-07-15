@@ -16,10 +16,10 @@ func Brand(ctx context.Context) {
 	pipeline := []bson.M{
 		{
 			"$addFields": bson.M{
-				"brand": bson.M{
+				"brandSlug": bson.M{
 					"$toLower": "$brand",
 				},
-				"model": bson.M{
+				"modelSlug": bson.M{
 					"$toLower": "$model",
 				},
 				"interiorColor": bson.M{
@@ -44,26 +44,10 @@ func Brand(ctx context.Context) {
 						0,
 					},
 				},
-				"licensePlate":     "$_id",
-				"picturesUploaded": false,
-				"interiorPictures": bson.M{
-					"$cond": bson.A{
-						bson.M{"$or": bson.A{
-							bson.M{"$eq": bson.A{"$interiorPictures", nil}},
-							bson.M{"$eq": bson.A{"$interiorPictures", bson.A{}}},
-						}},
-						bson.A{},
-						"$interiorPictures",
-					},
-				},
-				"exteriorPictures": bson.M{
-					"$cond": bson.A{
-						bson.M{"$or": bson.A{
-							bson.M{"$eq": bson.A{"$exteriorPictures", nil}},
-							bson.M{"$eq": bson.A{"$exteriorPictures", bson.A{}}},
-						}},
-						bson.A{},
-						"$exteriorPictures",
+				"licensePlate": bson.M{
+					"$ifNull": bson.A{
+						"$licensePlate",
+						"$_id",
 					},
 				},
 			},
@@ -97,39 +81,38 @@ func Brand(ctx context.Context) {
 		{
 			"$lookup": bson.M{
 				"from":         BRAND_SOURCE,
-				"localField":   "brand",
+				"localField":   "brandSlug",
 				"foreignField": "slug",
-				"as":           "brand",
+				"as":           "brandObject",
 			},
 		},
 		{
 			"$unwind": bson.M{
-				"path":                       "$brand",
+				"path":                       "$brandObject",
 				"preserveNullAndEmptyArrays": true,
 			},
 		},
 		{
-			"$addFields": bson.M{
-				"brand": bson.M{
-					"$ifNull": []interface{}{"$brand", nil},
-				},
-			},
-		},
-		{
 			"$match": bson.M{
-				"brand": bson.M{
+				"brandObject": bson.M{
 					"$exists": true,
 					"$ne":     nil,
 				},
 			},
 		},
 		{
-			"$out": utils.CARS_PROCESSED_COLLECTION,
+			"$merge": bson.M{
+				"into":           utils.CARS_PROCESSED_COLLECTION,
+				"on":             "_id",
+				"whenMatched":    "keepExisting",
+				"whenNotMatched": "insert",
+			},
 		},
 	}
 	BaseTransformation(ctx, pipeline, utils.CARS_NON_PROCESSED_COLLECTION, utils.DATABASE)
 }
 
+// This function if for clean the model lower field and eliminate some words that are not necessary
 func BrandToModel(ctx context.Context, regex string, find string, replacement string) {
 	log.Print("Starting brand to model transformation... with regex: " + regex + " find: " + find + " replacement: " + replacement + "\n")
 
@@ -143,9 +126,9 @@ func BrandToModel(ctx context.Context, regex string, find string, replacement st
 		},
 		{
 			"$addFields": bson.M{
-				"model": bson.M{
+				"modelSlug": bson.M{
 					"$replaceOne": bson.M{
-						"input":       "$model",
+						"input":       "$modelSlug",
 						"find":        find,
 						"replacement": replacement,
 					},
