@@ -1,6 +1,10 @@
 package transformation
 
-import "context"
+import (
+	"context"
+
+	"github.com/bujosa/xihe/scripts"
+)
 
 func RunDealerTransformation(ctx context.Context) {
 	InitDealerTransformation(ctx)
@@ -15,7 +19,10 @@ func RunCarTransformation(ctx context.Context) {
 	BrandToModel(ctx, "Lexus", " ", "")
 	BrandToModel(ctx, "ANIVERSARIO", "aniversario", "series")
 	Model(ctx)
+
+	// Model UnMatched Strategy
 	UnMatchedModelLayerTwo(ctx)
+	scripts.FixTrimNameForModelMatchLayerTwo(ctx)
 
 	// Second if lookup
 	Trim(ctx)

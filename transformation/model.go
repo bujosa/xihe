@@ -59,6 +59,12 @@ func Model(ctx context.Context) {
 						false,
 					},
 				},
+				"setTrimName": bson.M{
+					"$ifNull": bson.A{
+						"$setTrimName",
+						false,
+					},
+				},
 			},
 		},
 		{
@@ -168,10 +174,21 @@ func UnMatchedModelLayerTwo(ctx context.Context) {
 		},
 		{
 			"$lookup": bson.M{
-				"from":         MODEL_SOURCE,
-				"localField":   "modelSlug",
-				"foreignField": "slug",
-				"as":           "modelObject",
+				"from": MODEL_SOURCE,
+				"let":  bson.M{"modelSlug": "$modelSlug"},
+				"pipeline": bson.A{
+					bson.M{
+						"$match": bson.M{
+							"$expr": bson.M{
+								"$and": bson.A{
+									bson.M{"$eq": bson.A{"$slug", "$$modelSlug"}},
+									bson.M{"$eq": bson.A{"$deleted", false}},
+								},
+							},
+						},
+					},
+				},
+				"as": "modelObject",
 			},
 		},
 		{
