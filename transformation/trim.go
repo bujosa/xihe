@@ -11,12 +11,13 @@ import (
 const TRIM_SOURCE = "trimlevels"
 
 func Trim(ctx context.Context) {
-	log.Print("Starting trim transformation... \n")
+	log.Print("Starting Trim Transformation Layer 1... \n")
 
 	pipeline := []bson.M{
 		{
 			"$match": bson.M{
-				"modelMatched": true,
+				"modelMatched":    true,
+				"modelMatchLayer": 1,
 			},
 		},
 		{

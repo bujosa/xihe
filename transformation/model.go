@@ -53,6 +53,12 @@ func Model(ctx context.Context) {
 						},
 					},
 				},
+				"trimMatched": bson.M{
+					"$ifNull": bson.A{
+						"$trimMatched",
+						false,
+					},
+				},
 			},
 		},
 		{
