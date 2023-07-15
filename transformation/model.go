@@ -36,14 +36,19 @@ func Model(ctx context.Context) {
 					},
 				},
 				"modelSlug": bson.M{
-					"$concat": []interface{}{
-						"$brandObject.slug",
-						"-",
+					"$ifNull": bson.A{
+						"$modelSlug",
 						bson.M{
-							"$replaceAll": bson.M{
-								"input":       "$modelSlug",
-								"find":        " ",
-								"replacement": "-",
+							"$concat": []interface{}{
+								"$brandObject.slug",
+								"-",
+								bson.M{
+									"$replaceAll": bson.M{
+										"input":       "$modelSlug",
+										"find":        " ",
+										"replacement": "-",
+									},
+								},
 							},
 						},
 					},
@@ -75,18 +80,6 @@ func Model(ctx context.Context) {
 							},
 						},
 						"then": true,
-						"else": false,
-					},
-				},
-				"trimMatched": bson.M{
-					"$cond": bson.M{
-						"if": bson.M{
-							"$ifNull": []interface{}{
-								"$trimObject",
-								false,
-							},
-						},
-						"then": "$trimMatched",
 						"else": false,
 					},
 				},
