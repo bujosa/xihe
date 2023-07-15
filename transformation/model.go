@@ -10,19 +10,38 @@ import (
 
 const MODEL_SOURCE = "models"
 
+// Model function is for lookup the model in the models collection
 func Model(ctx context.Context) {
 	log.Print("Starting model transformation... \n")
 
 	pipeline := []bson.M{
 		{
 			"$addFields": bson.M{
+				"pictureUploaded": bson.M{
+					"$ifNull": bson.A{
+						"$pictureUploaded",
+						false,
+					},
+				},
+				"interiorPictures": bson.M{
+					"$ifNull": bson.A{
+						"$interiorPictures",
+						bson.A{},
+					},
+				},
+				"exteriorPictures": bson.M{
+					"$ifNull": bson.A{
+						"$exteriorPictures",
+						bson.A{},
+					},
+				},
 				"modelSlug": bson.M{
 					"$concat": []interface{}{
-						"$brand.slug",
+						"$brandObject.slug",
 						"-",
 						bson.M{
 							"$replaceAll": bson.M{
-								"input":       "$model",
+								"input":       "$modelSlug",
 								"find":        " ",
 								"replacement": "-",
 							},
@@ -36,12 +55,12 @@ func Model(ctx context.Context) {
 				"from":         MODEL_SOURCE,
 				"localField":   "modelSlug",
 				"foreignField": "slug",
-				"as":           "model",
+				"as":           "modelObject",
 			},
 		},
 		{
 			"$unwind": bson.M{
-				"path":                       "$model",
+				"path":                       "$modelObject",
 				"preserveNullAndEmptyArrays": true,
 			},
 		},
@@ -51,7 +70,7 @@ func Model(ctx context.Context) {
 					"$cond": bson.M{
 						"if": bson.M{
 							"$ifNull": []interface{}{
-								"$model",
+								"$modelObject",
 								false,
 							},
 						},
@@ -59,11 +78,34 @@ func Model(ctx context.Context) {
 						"else": false,
 					},
 				},
-				"trimMatched": false,
-				"uploaded":    false,
+				"trimMatched": bson.M{
+					"$cond": bson.M{
+						"if": bson.M{
+							"$ifNull": []interface{}{
+								"$trimObject",
+								false,
+							},
+						},
+						"then": "$trimMatched",
+						"else": false,
+					},
+				},
+				"uploaded": bson.M{
+					"$ifNull": bson.A{
+						"$uploaded",
+						false,
+					},
+				},
 			},
 		},
-		{"$out": utils.CARS_PROCESSED_COLLECTION},
+		{
+			"$merge": bson.M{
+				"into":           utils.CARS_PROCESSED_COLLECTION,
+				"on":             "_id",
+				"whenMatched":    "merge",
+				"whenNotMatched": "fail",
+			},
+		},
 	}
 
 	BaseTransformation(ctx, pipeline, utils.CARS_PROCESSED_COLLECTION, utils.DATABASE)

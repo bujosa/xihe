@@ -187,8 +187,7 @@ func DealerIntoCarTransformation(ctx context.Context) {
 		{
 			"$addFields": bson.M{
 				"spot": bson.M{
-					"$cond": bson.A{
-						bson.M{"$ifNull": bson.A{"$spot", nil}},
+					"$ifNull": bson.A{
 						"$spot",
 						"$dealerObject.spot",
 					},

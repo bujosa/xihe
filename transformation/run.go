@@ -9,11 +9,13 @@ func RunDealerTransformation(ctx context.Context) {
 
 func RunCarTransformation(ctx context.Context) {
 	// Before running section dealer run this Make sure you run dealer script before
-	// Brand()
-	// BrandToModel("Lexus", " ", "")
-	// BrandToModel("ANIVERSARIO", "aniversario", "series")
-	// Model()
-	// Trim()
-	// Color()
+
+	// First step is about lookup brand and add some fields necesary for the transformation
+	Brand(ctx)
+	BrandToModel(ctx, "Lexus", " ", "")
+	BrandToModel(ctx, "ANIVERSARIO", "aniversario", "series")
+	Model(ctx)
+	Trim(ctx)
+	Color(ctx)
 	DealerIntoCarTransformation(ctx)
 }

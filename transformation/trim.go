@@ -23,7 +23,7 @@ func Trim(ctx context.Context) {
 			"$lookup": bson.M{
 				"from": TRIM_SOURCE,
 				"let": bson.M{
-					"modelId": "$model._id",
+					"modelId": "$modelObject._id",
 					"year":    "$year",
 				},
 				"pipeline": []bson.M{
@@ -71,12 +71,12 @@ func Trim(ctx context.Context) {
 						},
 					},
 				},
-				"as": "trim",
+				"as": "trimObject",
 			},
 		},
 		{
 			"$unwind": bson.M{
-				"path":                       "$trim",
+				"path":                       "$trimObject",
 				"preserveNullAndEmptyArrays": true,
 			},
 		},
@@ -86,7 +86,7 @@ func Trim(ctx context.Context) {
 					"$cond": bson.M{
 						"if": bson.M{
 							"$ifNull": []interface{}{
-								"$trim",
+								"$trimObject",
 								false,
 							},
 						},
