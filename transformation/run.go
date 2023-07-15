@@ -15,6 +15,9 @@ func RunCarTransformation(ctx context.Context) {
 	BrandToModel(ctx, "Lexus", " ", "")
 	BrandToModel(ctx, "ANIVERSARIO", "aniversario", "series")
 	Model(ctx)
+	UnMatchedModelLayerTwo(ctx)
+
+	// Second if lookup
 	Trim(ctx)
 	Color(ctx)
 	DealerIntoCarTransformation(ctx)
