@@ -30,6 +30,10 @@ type Car struct {
 	Spot             string   `bson:"spot"`
 	ExteriorPictures []string `bson:"exteriorPictures"`
 	InteriorPictures []string `bson:"interiorPictures"`
+	Model            string   `bson:"model"`
+	Brand            string   `bson:"brand"`
+	ModelSlug        string   `bson:"modelSlug"`
+	TrimName         string   `bson:"trimName"`
 }
 
 type UpdateCarInfo struct {
@@ -70,13 +74,13 @@ func BaseGetCars(ctx context.Context, filter Filter) []Car {
 				"year":  1,
 				"title": 1,
 				"trim": bson.M{
-					"$toString": "$trim._id",
+					"$toString": "$trimObject._id",
 				},
 				"interiorColor": bson.M{
-					"$toString": "$interiorColor._id",
+					"$toString": "$interiorColorObject._id",
 				},
 				"exteriorColor": bson.M{
-					"$toString": "$exteriorColor._id",
+					"$toString": "$exteriorColorObject._id",
 				},
 				"mileage":          1,
 				"licensePlate":     1,
@@ -90,6 +94,10 @@ func BaseGetCars(ctx context.Context, filter Filter) []Car {
 				"spot":             1,
 				"exteriorPictures": 1,
 				"interiorPictures": 1,
+				"model":            1,
+				"brand":            1,
+				"modelSlug":        1,
+				"trimName":         1,
 			},
 		},
 	}
@@ -153,6 +161,19 @@ func GetCarsWithPublishDealers(ctx context.Context) []Car {
 			"uploaded":            false,
 			"dealerObject.status": "PUBLISHED",
 			"status":              bson.M{"$ne": "failed"},
+		},
+	}
+
+	return BaseGetCars(ctx, filter)
+}
+
+func GetCarsForModelMatchLayerTwo(ctx context.Context) []Car {
+	filter := Filter{
+		Match: bson.M{
+			"modelMatched":    true,
+			"modelMatchLayer": 2,
+			"uploaded":        false,
+			"setTrimName":     false,
 		},
 	}
 
