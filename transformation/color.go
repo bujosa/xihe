@@ -47,12 +47,12 @@ func Color(ctx context.Context) {
 						"$limit": 1,
 					},
 				},
-				"as": "interiorColor",
+				"as": "interiorColorObject",
 			},
 		},
 		{
 			"$unwind": bson.M{
-				"path":                       "$interiorColor",
+				"path":                       "$interiorColorObject",
 				"preserveNullAndEmptyArrays": true,
 			},
 		},
@@ -105,12 +105,12 @@ func Color(ctx context.Context) {
 						"$limit": 1,
 					},
 				},
-				"as": "exteriorColor",
+				"as": "exteriorColorObject",
 			},
 		},
 		{
 			"$unwind": bson.M{
-				"path":                       "$exteriorColor",
+				"path":                       "$exteriorColorObject",
 				"preserveNullAndEmptyArrays": true,
 			},
 		},
@@ -120,7 +120,7 @@ func Color(ctx context.Context) {
 					"$cond": bson.M{
 						"if": bson.M{
 							"$eq": []interface{}{
-								"$exteriorColor.slug",
+								"$exteriorColorObject.slug",
 								"cream",
 							},
 						},
