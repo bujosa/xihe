@@ -5,6 +5,7 @@ const DATABASE = "catalog"
 const CARS_PROCESSED_COLLECTION = "cars_processed"
 const DEALERS_COLLECTION = "dealers_supercarros"
 const DEALERS_SOURCE_COLLECTION = "dealers"
+const FUELTYPE_SOURCE_COLLECTION = "fueltypes"
 const CARS_NON_PROCESSED_COLLECTION = "cars_non_processed"
 
 const DOP_TO_USD = 58
