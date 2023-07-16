@@ -59,6 +59,12 @@ func Model(ctx context.Context) {
 						false,
 					},
 				},
+				"fueltypeMatched": bson.M{
+					"$ifNull": bson.A{
+						"$fueltypeMatched",
+						false,
+					},
+				},
 				"setTrimName": bson.M{
 					"$ifNull": bson.A{
 						"$setTrimName",
