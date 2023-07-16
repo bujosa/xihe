@@ -164,7 +164,6 @@ func Model(ctx context.Context) {
 	BaseTransformation(ctx, pipeline, utils.CARS_PROCESSED_COLLECTION, utils.DATABASE)
 }
 
-// TODO: Add matching model for unmatched model in the first layer
 func UnMatchedModelLayerTwo(ctx context.Context) {
 
 	log.Println("Starting unmatched model layer one transformation...")
@@ -248,6 +247,147 @@ func UnMatchedModelLayerTwo(ctx context.Context) {
 					},
 				},
 				"modelMatchLayer": 2,
+			},
+		},
+		{
+			"$match": bson.M{
+				"modelMatched": true,
+			},
+		},
+		{
+			"$project": bson.M{
+				"modelObject":     1,
+				"modelMatched":    1,
+				"modelMatchLayer": 1,
+				"trimName":        1,
+			},
+		},
+		{
+			"$merge": bson.M{
+				"into":           utils.CARS_PROCESSED_COLLECTION,
+				"on":             "_id",
+				"whenMatched":    "merge",
+				"whenNotMatched": "fail",
+			},
+		},
+	}
+
+	BaseTransformation(ctx, pipeline, utils.CARS_PROCESSED_COLLECTION, utils.DATABASE)
+}
+
+func UnMatchedModelLayerThree(ctx context.Context) {
+	log.Println("Starting unmatched model layer two transformation...")
+
+	// Check first model slug split - have more or equal to 3 words
+	pipeline := []bson.M{
+		{
+			"$match": bson.M{
+				"modelMatched": false,
+			},
+		},
+		{
+			"$addFields": bson.M{
+				"trimName": "$modelSlug",
+				"modelSlugCount": bson.M{
+					"$size": bson.M{
+						"$split": bson.A{
+							"$modelSlug",
+							"-",
+						},
+					},
+				},
+			},
+		},
+		{
+			"$match": bson.M{
+				"modelSlugCount": bson.M{
+					"$gte": 3,
+				},
+			},
+		},
+		{
+			"$addFields": bson.M{
+				"modelSlug": bson.M{
+					"$concat": []interface{}{
+						bson.M{
+							"$arrayElemAt": []interface{}{
+								bson.M{
+									"$split": bson.A{
+										"$modelSlug",
+										"-",
+									},
+								},
+								0,
+							},
+						},
+						"-",
+						bson.M{
+							"$arrayElemAt": []interface{}{
+								bson.M{
+									"$split": bson.A{
+										"$modelSlug",
+										"-",
+									},
+								},
+								1,
+							},
+						},
+						"-",
+						bson.M{
+							"$arrayElemAt": []interface{}{
+								bson.M{
+									"$split": bson.A{
+										"$modelSlug",
+										"-",
+									},
+								},
+								2,
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			"$lookup": bson.M{
+				"from": MODEL_SOURCE,
+				"let":  bson.M{"modelSlug": "$modelSlug"},
+				"pipeline": bson.A{
+					bson.M{
+						"$match": bson.M{
+							"$expr": bson.M{
+								"$and": bson.A{
+									bson.M{"$eq": bson.A{"$slug", "$$modelSlug"}},
+									bson.M{"$eq": bson.A{"$deleted", false}},
+								},
+							},
+						},
+					},
+				},
+				"as": "modelObject",
+			},
+		},
+		{
+			"$unwind": bson.M{
+				"path":                       "$modelObject",
+				"preserveNullAndEmptyArrays": true,
+			},
+		},
+		{
+			"$addFields": bson.M{
+				"modelMatched": bson.M{
+					"$cond": bson.M{
+						"if": bson.M{
+							"$ifNull": []interface{}{
+								"$modelObject",
+								false,
+							},
+						},
+						"then": true,
+						"else": false,
+					},
+				},
+				"modelMatchLayer": 3,
 			},
 		},
 		{

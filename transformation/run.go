@@ -16,9 +16,14 @@ func RunCarTransformation(ctx context.Context) {
 
 	// First step is about lookup brand and add some fields necesary for the transformation
 	Brand(ctx)
+
+	// Model transformation
 	BrandToModel(ctx, "Lexus", " ", "")
 	BrandToModel(ctx, "ANIVERSARIO", "aniversario", "series")
 	Model(ctx)
+
+	// Color transformation
+	Color(ctx)
 
 	// Fueltype transformation
 	Fueltype(ctx)
@@ -34,10 +39,15 @@ func RunCarTransformation(ctx context.Context) {
 
 	// Model UnMatched Strategy
 	UnMatchedModelLayerTwo(ctx)
-	scripts.FixTrimNameForModelMatchLayerTwo(ctx)
+	scripts.FixTrimNameForModelMatchLayer(ctx, 2)
 
-	// Second if lookup
+	// Model UnMatched Strategy Layer 3
+	UnMatchedModelLayerThree(ctx)
+	scripts.FixTrimNameForModelMatchLayer(ctx, 3)
+
+	// Trim transformation
 	Trim(ctx)
-	Color(ctx)
+
+	// Dealer into car transformation
 	DealerIntoCarTransformation(ctx)
 }

@@ -167,11 +167,11 @@ func GetCarsWithPublishDealers(ctx context.Context) []Car {
 	return BaseGetCars(ctx, filter)
 }
 
-func GetCarsForModelMatchLayerTwo(ctx context.Context) []Car {
+func GetCarsForModelMatchLayer(ctx context.Context, layer int) []Car {
 	filter := Filter{
 		Match: bson.M{
 			"modelMatched":    true,
-			"modelMatchLayer": 2,
+			"modelMatchLayer": layer,
 			"uploaded":        false,
 			"setTrimName":     false,
 		},
