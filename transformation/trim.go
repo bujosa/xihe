@@ -11,37 +11,64 @@ import (
 const TRIM_SOURCE = "trimlevels"
 
 func Trim(ctx context.Context) {
-	log.Print("Starting Trim Transformation Layer 1... \n")
+	log.Print("Starting Trim Transformation ... \n")
 
 	pipeline := []bson.M{
 		{
 			"$match": bson.M{
-				"modelMatched":    true,
-				"modelMatchLayer": 1,
+				"modelMatched": true,
+				"trimMatched":  false,
 			},
 		},
 		{
 			"$lookup": bson.M{
 				"from": TRIM_SOURCE,
 				"let": bson.M{
-					"modelId": "$modelObject._id",
-					"year":    "$year",
+					"modelId":  "$modelObject._id",
+					"year":     "$year",
+					"trimName": "$trimName",
 				},
 				"pipeline": []bson.M{
 					{
 						"$match": bson.M{
 							"$expr": bson.M{
-								"$and": []bson.M{
+								"$or": []bson.M{
 									{
-										"$eq": []interface{}{
-											"$carModel",
-											"$$modelId",
+										"$and": []bson.M{
+											{
+												"$eq": []interface{}{
+													"$carModel",
+													"$$modelId",
+												},
+											},
+											{
+												"$eq": []interface{}{
+													"$name",
+													"$$trimName",
+												},
+											},
+											{
+												"$eq": []interface{}{
+													"$year",
+													"$$year",
+												},
+											},
 										},
 									},
 									{
-										"$eq": []interface{}{
-											"$year",
-											"$$year",
+										"$and": []bson.M{
+											{
+												"$eq": []interface{}{
+													"$carModel",
+													"$$modelId",
+												},
+											},
+											{
+												"$eq": []interface{}{
+													"$year",
+													"$$year",
+												},
+											},
 										},
 									},
 								},
