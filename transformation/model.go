@@ -65,10 +65,46 @@ func Model(ctx context.Context) {
 						false,
 					},
 				},
+				"transmissionMatched": bson.M{
+					"$ifNull": bson.A{
+						"$transmissionMatched",
+						false,
+					},
+				},
+				"bodyStyleMatched": bson.M{
+					"$ifNull": bson.A{
+						"$bodyStyleMatched",
+						false,
+					},
+				},
+				"driveTrainMatched": bson.M{
+					"$ifNull": bson.A{
+						"$drivetrainMatched",
+						false,
+					},
+				},
 				"setTrimName": bson.M{
 					"$ifNull": bson.A{
 						"$setTrimName",
 						false,
+					},
+				},
+				"uploaded": bson.M{
+					"$ifNull": bson.A{
+						"$uploaded",
+						false,
+					},
+				},
+				"modelMatched": bson.M{
+					"$ifNull": bson.A{
+						"$modelMatched",
+						false,
+					},
+				},
+				"modelMatchLayer": bson.M{
+					"$ifNull": bson.A{
+						"$modelMatchLayer",
+						-1,
 					},
 				},
 			},
@@ -98,7 +134,7 @@ func Model(ctx context.Context) {
 							},
 						},
 						"then": true,
-						"else": false,
+						"else": "$modelMatched",
 					},
 				},
 				"modelMatchLayer": bson.M{
@@ -111,12 +147,6 @@ func Model(ctx context.Context) {
 						},
 						"then": 1,
 						"else": "$modelMatchLayer",
-					},
-				},
-				"uploaded": bson.M{
-					"$ifNull": bson.A{
-						"$uploaded",
-						false,
 					},
 				},
 			},

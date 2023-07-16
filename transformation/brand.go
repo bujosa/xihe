@@ -50,7 +50,6 @@ func Brand(ctx context.Context) {
 						"$_id",
 					},
 				},
-				"modelMatchLayer": -1,
 			},
 		},
 		{

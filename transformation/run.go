@@ -20,6 +20,18 @@ func RunCarTransformation(ctx context.Context) {
 	BrandToModel(ctx, "ANIVERSARIO", "aniversario", "series")
 	Model(ctx)
 
+	// Fueltype transformation
+	Fueltype(ctx)
+
+	// Transmission transformation
+	Transmission(ctx)
+
+	// BodyStyle transformation
+	BodyStyle(ctx)
+
+	// DriveTrain transformation
+	DriveTrain(ctx)
+
 	// Model UnMatched Strategy
 	UnMatchedModelLayerTwo(ctx)
 	scripts.FixTrimNameForModelMatchLayerTwo(ctx)

@@ -8,7 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func MappingFueltypeTransformation(ctx context.Context) {
+func Fueltype(ctx context.Context) {
 	log.Println("Starting Mapping Fueltype transformation...")
 
 	pipeline := []bson.M{
