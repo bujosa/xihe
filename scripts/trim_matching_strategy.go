@@ -64,6 +64,8 @@ func TrimMatchingStrategy(ctx context.Context, dealerPublished bool) {
 	}
 
 	updatingMissingUpdatedCars(ctx)
+
+	log.Println("Trim Matching Strategy finished")
 }
 
 // FormatCreateCarInput formats the input to create a car
