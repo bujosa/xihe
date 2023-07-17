@@ -14,6 +14,17 @@ type CreateTrimInput struct {
 	Price        int      `json:"price"`
 }
 
-type CreateTrimResponse struct {
+type Trim struct {
 	Id string `json:"id"`
+}
+
+type CreateTrimResponse struct {
+	Data struct {
+		CreateTrim Trim `json:"createTrimLevel"`
+	} `json:"data"`
+}
+
+func CreateTrim(createTrimInput CreateTrimInput) (Trim, error) {
+	// TODO: Implement this
+	return Trim{}, nil
 }

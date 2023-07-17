@@ -6,6 +6,16 @@ type CreateModelInput struct {
 	Status string `json:"status"`
 }
 
-type CreateModelResponse struct {
+type Model struct {
 	Id string `json:"id"`
+}
+
+type CreateModelResponse struct {
+	Data struct {
+		CreateModel Model `json:"createModel"`
+	} `json:"data"`
+}
+
+func CreateModel(createModelInput CreateModelInput) (Model, error) {
+	return Model{}, nil
 }
