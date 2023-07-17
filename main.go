@@ -59,6 +59,7 @@ func main() {
 		scripts.TrimMatchingStrategy(ctx, true)
 	case "models":
 		transformation.RefineModel(ctx)
+		transformation.RebornModel(ctx)
 	case "trims":
 		scripts.UploadTrims(ctx)
 		transformation.RunCarTransformation(ctx)

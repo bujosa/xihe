@@ -79,6 +79,16 @@ func transformModelName(model string, brand string, trim string, year int) (stri
 		return strings.Replace(model, "-", "", 1), "Base " + strconv.Itoa(year)
 	}
 
+	if brand == "Volkswagen" && modelWords[0] == "T-" {
+		trimName := ""
+		if len(modelWords) > 2 {
+			trimName = strings.Join(modelWords[2:], " ")
+		} else {
+			trimName = "Base " + strconv.Itoa(year)
+		}
+		return "T-" + modelWords[1], trimName
+	}
+
 	switch len(modelWords) {
 	case 1:
 		return model, "Base " + strconv.Itoa(year)
