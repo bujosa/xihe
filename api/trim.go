@@ -13,3 +13,7 @@ type CreateTrimInput struct {
 	Year         int      `json:"year"`
 	Price        int      `json:"price"`
 }
+
+type CreateTrimResponse struct {
+	Id string `json:"id"`
+}
