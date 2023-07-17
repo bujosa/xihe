@@ -62,7 +62,7 @@ func main() {
 		transformation.RebornModel(ctx)
 	case "trims":
 		scripts.UploadTrims(ctx)
-		transformation.RunCarTransformation(ctx)
+		transformation.Trim(ctx)
 	}
 
 }
