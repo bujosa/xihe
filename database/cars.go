@@ -34,6 +34,12 @@ type Car struct {
 	Brand            string   `bson:"brand"`
 	ModelSlug        string   `bson:"modelSlug"`
 	TrimName         string   `bson:"trimName"`
+	BodyStyleId      string   `bson:"bodyStyleId"`
+	FueltypeId       string   `bson:"fueltypeId"`
+	TransmissionId   string   `bson:"transmissionId"`
+	DriveTrainId     string   `bson:"driveTrainId"`
+	BrandId          string   `bson:"brandId"`
+	ModelId          string   `bson:"modelId"`
 }
 
 type UpdateCarInfo struct {
@@ -81,6 +87,24 @@ func BaseGetCars(ctx context.Context, filter Filter) []Car {
 				},
 				"exteriorColor": bson.M{
 					"$toString": "$exteriorColorObject._id",
+				},
+				"brandId": bson.M{
+					"$toString": "$brandObject._id",
+				},
+				"modelId": bson.M{
+					"$toString": "$modelObject._id",
+				},
+				"fueltypeId": bson.M{
+					"$toString": "$fueltypeObject._id",
+				},
+				"transmissionId": bson.M{
+					"$toString": "$transmissionObject._id",
+				},
+				"driveTrainId": bson.M{
+					"$toString": "$driveTrainObject._id",
+				},
+				"bodyStyleId": bson.M{
+					"$toString": "$bodyStyleObject._id",
 				},
 				"mileage":          1,
 				"licensePlate":     1,
