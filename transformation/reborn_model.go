@@ -24,6 +24,8 @@ func RebornModel(ctx context.Context) {
 			"uploaded":        false,
 		}})
 
+	log.Println("Found " + strconv.Itoa(len(cars)) + " cars to update")
+
 	for _, car := range cars {
 		modelName, trimName := fixModelAndTrimName(utils.EliminateExtraSpace(car.Model), car.Brand, car.Trim, car.Year)
 
