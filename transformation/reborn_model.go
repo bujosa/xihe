@@ -17,7 +17,7 @@ func RebornModel(ctx context.Context) {
 	log.Print("Starting Reborn Model Script... This purifies the database from cars that are not in the model list")
 	cars := database.BaseGetCars(ctx, database.Filter{
 		Match: bson.M{
-			"modelMatchLayer": 5,
+			"modelMatchLayer": 1,
 			"modelMatched":    true,
 			"setTrimName":     false,
 			"trimMatched":     false,
