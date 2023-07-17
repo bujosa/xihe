@@ -20,7 +20,7 @@ func RunCarTransformation(ctx context.Context) {
 	// Model transformation
 	BrandToModel(ctx, "ANIVERSARIO", "aniversario", "series")
 	BrandToModel(ctx, "Runner", "4-runner", "4runner")
-	Model(ctx)
+	Model(ctx, 1)
 
 	// Color transformation
 	Color(ctx)

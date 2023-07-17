@@ -11,7 +11,7 @@ import (
 const MODEL_SOURCE = "models"
 
 // Model function is for lookup the model in the models collection
-func Model(ctx context.Context) {
+func Model(ctx context.Context, layer int) {
 	log.Print("Starting model transformation... \n")
 
 	pipeline := []bson.M{
@@ -145,7 +145,7 @@ func Model(ctx context.Context) {
 								false,
 							},
 						},
-						"then": 1,
+						"then": layer,
 						"else": "$modelMatchLayer",
 					},
 				},

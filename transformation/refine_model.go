@@ -28,21 +28,22 @@ func RefineModel(ctx context.Context) {
 		updateCarInfo := database.UpdateCarInfo{
 			Car: car,
 			Set: bson.M{
-				"model":       modelName,
-				"trimName":    trimName,
-				"modelSlug":   utils.Slug([]string{car.Brand, modelName}),
-				"setTrimName": true,
+				"model":           modelName,
+				"trimName":        trimName,
+				"modelSlug":       utils.Slug([]string{car.Brand, modelName}),
+				"setTrimName":     true,
+				"modelMatchLayer": 4,
 			},
 		}
 
 		database.UpdateCar(ctx, updateCarInfo)
 	}
 
-	Model(ctx)
+	Model(ctx, 4)
 
 	var newCars []database.Car = database.BaseGetCars(ctx, database.Filter{
 		Match: bson.M{
-			"modelMatchLayer": -1,
+			"modelMatchLayer": 4,
 			"modelMatched":    false,
 		}})
 
@@ -63,7 +64,7 @@ func RefineModel(ctx context.Context) {
 		}
 	}
 
-	Model(ctx)
+	Model(ctx, 4)
 
 	log.Println("Create Model Script finished")
 }

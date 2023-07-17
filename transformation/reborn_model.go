@@ -28,21 +28,22 @@ func RebornModel(ctx context.Context) {
 		updateCarInfo := database.UpdateCarInfo{
 			Car: car,
 			Set: bson.M{
-				"model":       modelName,
-				"trimName":    trimName,
-				"modelSlug":   utils.Slug([]string{car.Brand, modelName}),
-				"setTrimName": true,
+				"model":           modelName,
+				"trimName":        trimName,
+				"modelSlug":       utils.Slug([]string{car.Brand, modelName}),
+				"setTrimName":     true,
+				"modelMatchLayer": 5,
 			},
 		}
 
 		database.UpdateCar(ctx, updateCarInfo)
 	}
 
-	Model(ctx)
+	Model(ctx, 5)
 
 	newCars := database.BaseGetCars(ctx, database.Filter{
 		Match: bson.M{
-			"modelMatchLayer": 1,
+			"modelMatchLayer": 5,
 			"modelMatched":    false,
 			"setTrimName":     true,
 		}})
@@ -64,7 +65,7 @@ func RebornModel(ctx context.Context) {
 
 	}
 
-	Model(ctx)
+	Model(ctx, 5)
 	log.Println("Finished Create Model Script")
 }
 
