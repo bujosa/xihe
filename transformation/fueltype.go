@@ -13,11 +13,6 @@ func Fueltype(ctx context.Context) {
 
 	pipeline := []bson.M{
 		{
-			"$match": bson.M{
-				"fueltypeMatched": false,
-			},
-		},
-		{
 			"$addFields": bson.M{
 				"fueltypeSlug": bson.M{
 					"$cond": bson.A{
@@ -67,8 +62,21 @@ func Fueltype(ctx context.Context) {
 			},
 		},
 		{
+			"$match": bson.M{
+				"fueltypeObject": bson.M{
+					"$exists": true,
+				},
+			},
+		},
+		{
 			"$addFields": bson.M{
 				"fueltypeMatched": true,
+			},
+		},
+		{
+			"$project": bson.M{
+				"fueltypeObject": 1,
+				"fueltypeSlug":   1,
 			},
 		},
 		{

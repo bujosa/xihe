@@ -165,10 +165,8 @@ func Model(ctx context.Context) {
 }
 
 func UnMatchedModelLayerTwo(ctx context.Context) {
-
 	log.Println("Starting unmatched model layer one transformation...")
 
-	// In model slug pick the first two words and search in the models collection
 	pipeline := []bson.M{
 		{
 			"$match": bson.M{

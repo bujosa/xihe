@@ -73,7 +73,7 @@ func DriveTrain(ctx context.Context) {
 			},
 		},
 		{
-			"match": bson.M{
+			"$match": bson.M{
 				"driveTrainObject": bson.M{
 					"$ne": nil,
 				},

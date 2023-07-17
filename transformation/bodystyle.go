@@ -70,8 +70,14 @@ func BodyStyle(ctx context.Context) {
 																												bson.M{
 																													"$cond": bson.A{
 																														bson.M{"$eq": bson.A{"$bodyStyle", "Four Wheel"}},
-																														"atv",
-																														"other",
+																														"todo-terrero-atv",
+																														bson.M{
+																															"$cond": bson.A{
+																																bson.M{"$eq": bson.A{"$bodyStyle", "Camioneta"}},
+																																"pick-up",
+																																"other",
+																															},
+																														},
 																													},
 																												},
 																											},
@@ -115,7 +121,7 @@ func BodyStyle(ctx context.Context) {
 			},
 		},
 		{
-			"match": bson.M{
+			"$match": bson.M{
 				"bodyStyleObject": bson.M{
 					"$exists": true,
 				},
