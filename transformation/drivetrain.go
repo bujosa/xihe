@@ -60,7 +60,7 @@ func DriveTrain(ctx context.Context) {
 		},
 		{
 			"$lookup": bson.M{
-				"from":         utils.BODYSTYLE_SOURCE_COLLECTION,
+				"from":         utils.DRIVETRAIN_SOURCE_COLLECTION,
 				"localField":   "driveTrainSlug",
 				"foreignField": "slug",
 				"as":           "driveTrainObject",
@@ -75,13 +75,20 @@ func DriveTrain(ctx context.Context) {
 		{
 			"$match": bson.M{
 				"driveTrainObject": bson.M{
-					"$ne": nil,
+					"$exists": true,
 				},
 			},
 		},
 		{
 			"$addFields": bson.M{
 				"driveTrainMatched": true,
+			},
+		},
+		{
+			"$project": bson.M{
+				"driveTrainObject":  1,
+				"driveTrainSlug":    1,
+				"driveTrainMatched": 1,
 			},
 		},
 		{

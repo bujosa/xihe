@@ -13,26 +13,31 @@ func Fueltype(ctx context.Context) {
 
 	pipeline := []bson.M{
 		{
+			"$match": bson.M{
+				"fueltypeMatched": false,
+			},
+		},
+		{
 			"$addFields": bson.M{
 				"fueltypeSlug": bson.M{
 					"$cond": bson.A{
-						bson.M{"$eq": bson.A{"$fueltype", "Gasolina"}},
+						bson.M{"$eq": bson.A{"$fuelType", "Gasolina"}},
 						"gasolina",
 						bson.M{
 							"$cond": bson.A{
-								bson.M{"$eq": bson.A{"$fueltype", "Diesel"}},
+								bson.M{"$eq": bson.A{"$fuelType", "Diesel"}},
 								"diesel",
 								bson.M{
 									"$cond": bson.A{
-										bson.M{"$eq": bson.A{"$fueltype", "Híbrido"}},
+										bson.M{"$eq": bson.A{"$fuelType", "Híbrido"}},
 										"hibrido",
 										bson.M{
 											"$cond": bson.A{
-												bson.M{"$eq": bson.A{"$fueltype", "GLP"}},
+												bson.M{"$eq": bson.A{"$fuelType", "GLP"}},
 												"glp",
 												bson.M{
 													"$cond": bson.A{
-														bson.M{"$eq": bson.A{"$fueltype", "Gas Natural"}},
+														bson.M{"$eq": bson.A{"$fuelType", "Gas Natural"}},
 														"gnc",
 														"gasolina",
 													},
@@ -50,7 +55,7 @@ func Fueltype(ctx context.Context) {
 		{
 			"$lookup": bson.M{
 				"from":         utils.FUELTYPE_SOURCE_COLLECTION,
-				"localField":   "fuelTypeSlug",
+				"localField":   "fueltypeSlug",
 				"foreignField": "slug",
 				"as":           "fueltypeObject",
 			},
@@ -75,8 +80,9 @@ func Fueltype(ctx context.Context) {
 		},
 		{
 			"$project": bson.M{
-				"fueltypeObject": 1,
-				"fueltypeSlug":   1,
+				"fueltypeObject":  1,
+				"fueltypeSlug":    1,
+				"fueltypeMatched": 1,
 			},
 		},
 		{
