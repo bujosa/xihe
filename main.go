@@ -56,5 +56,7 @@ func main() {
 		scripts.TrimMatchingStrategy(ctx, false)
 	} else if uploadCommand == "cars published" {
 		scripts.TrimMatchingStrategy(ctx, true)
+	} else if uploadCommand == "models" {
+		transformation.RefineModel(ctx)
 	}
 }
