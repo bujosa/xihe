@@ -18,8 +18,9 @@ func RebornModel(ctx context.Context) {
 	cars := database.BaseGetCars(ctx, database.Filter{
 		Match: bson.M{
 			"modelMatchLayer": 1,
-			"modelMatched":    false,
+			"modelMatched":    true,
 			"setTrimName":     false,
+			"trimMatched":     false,
 		}})
 
 	for _, car := range cars {
@@ -66,7 +67,7 @@ func RebornModel(ctx context.Context) {
 	}
 
 	Model(ctx, 5)
-	log.Println("Finished Create Model Script")
+	log.Println("Finished Reborn Model Script")
 }
 
 func fixModelAndTrimName(model string, brand string, trim string, year int) (string, string) {
