@@ -11,12 +11,10 @@ import (
 )
 
 func FixTrimNameForModelMatchLayer(ctx context.Context, layer int) {
-	log.Print("Starting fix trim name for model match layer " + string(rune(layer)))
-	cars := database.GetCarsForModelMatchLayer(ctx, 2)
+	log.Print("Starting fix trim name for model match layer ", layer)
+	cars := database.GetCarsForModelMatchLayer(ctx, layer)
 
 	for _, car := range cars {
-
-		// car.Model eliminar primera palabra y añadir a trimName la restante
 		words := strings.Split(car.ModelSlug, "-")
 		trimName := strings.Join(words[layer:], " ")
 		trimName = utils.Title(trimName)
