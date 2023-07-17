@@ -111,10 +111,19 @@ func Model(ctx context.Context, layer int) {
 		},
 		{
 			"$lookup": bson.M{
-				"from":         MODEL_SOURCE,
-				"localField":   "modelSlug",
-				"foreignField": "slug",
-				"as":           "modelObject",
+				"from": MODEL_SOURCE,
+				"let": bson.M{
+					"modelSlug": "$modelSlug",
+				},
+				"pipeline": []bson.M{
+					{
+						"$match": bson.M{
+							"deleted": false,
+							"slug":    "$$modelSlug",
+						},
+					},
+				},
+				"as": "modelObject",
 			},
 		},
 		{
