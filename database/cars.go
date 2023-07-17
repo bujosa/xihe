@@ -35,7 +35,7 @@ type Car struct {
 	ModelSlug        string   `bson:"modelSlug"`
 	TrimName         string   `bson:"trimName"`
 	BodyStyleId      string   `bson:"bodyStyleId"`
-	FueltypeId       string   `bson:"fueltypeId"`
+	FuelTypeId       string   `bson:"fueltypeId"`
 	TransmissionId   string   `bson:"transmissionId"`
 	DriveTrainId     string   `bson:"driveTrainId"`
 	BrandId          string   `bson:"brandId"`

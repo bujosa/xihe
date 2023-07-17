@@ -50,13 +50,18 @@ func main() {
 		transformation.RunCarTransformation(ctx)
 	}
 
-	if uploadCommand == "dealers" {
+	switch uploadCommand {
+	case "dealers":
 		scripts.UploadDealers(ctx)
-	} else if uploadCommand == "cars" {
+	case "cars":
 		scripts.TrimMatchingStrategy(ctx, false)
-	} else if uploadCommand == "cars published" {
+	case "cars published":
 		scripts.TrimMatchingStrategy(ctx, true)
-	} else if uploadCommand == "models" {
+	case "models":
 		transformation.RefineModel(ctx)
+	case "trims":
+		scripts.UploadTrims(ctx)
+		transformation.RunCarTransformation(ctx)
 	}
+
 }
