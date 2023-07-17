@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"regexp"
 	"strings"
 )
 
@@ -18,4 +19,13 @@ func capitalizeFirstLetter(s string) string {
 		return s
 	}
 	return strings.ToUpper(s[:1]) + s[1:]
+}
+
+func EliminateExtraSpace(s string) string {
+	re := regexp.MustCompile(`\s+`)
+	output := re.ReplaceAllString(s, " ")
+
+	// Eliminar espacio al final del string
+	output = strings.TrimRight(output, " ")
+	return output
 }
