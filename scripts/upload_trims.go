@@ -20,7 +20,7 @@ func UploadTrims(ctx context.Context) {
 	newFeatures := []string{}
 
 	for i := 0; i < len(features); i++ {
-		if features[i].Slug == "bolsa-de-aire-de-chofer" || features[i].Slug == "aire-acondicianado" {
+		if features[i].Slug == "bolsa-de-aire-chofer" || features[i].Slug == "aire-acondicionado" {
 			newFeatures = append(newFeatures, features[i].Id)
 			features = append(features[:i], features[i+1:]...)
 			i--
