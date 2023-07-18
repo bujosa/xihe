@@ -135,4 +135,6 @@ func Trim(ctx context.Context) {
 	}
 
 	BaseTransformation(ctx, pipeline, utils.CARS_PROCESSED_COLLECTION, utils.DATABASE)
+
+	log.Print("Trim Transformation Finished \n")
 }

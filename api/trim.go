@@ -35,7 +35,7 @@ type CreateTrimResponse struct {
 }
 
 func CreateTrim(ctx context.Context, createTrimInput CreateTrimInput) (Trim, utils.StatusRequest) {
-	log.Println("Creating model... with Name: " + createTrimInput.Name)
+	log.Println("Creating Trim... with Name: " + createTrimInput.Name)
 
 	url := ctx.Value(utils.ProductionApiUrl).(string)
 	token := ctx.Value(utils.SessionSecret).(string)
@@ -75,6 +75,14 @@ func CreateTrim(ctx context.Context, createTrimInput CreateTrimInput) (Trim, uti
 		return Trim{}, utils.StatusRequest("failed")
 	}
 	defer response.Body.Close()
+
+	// responseReader := response.Body
+	// body, err := ioutil.ReadAll(responseReader)
+	// if err != nil {
+	// 	log.Printf("Error reading response body %s\n", err)
+	// 	return Trim{}, utils.StatusRequest("failed")
+	// }
+	// log.Println(string(body))
 
 	var responseData CreateTrimResponse
 
