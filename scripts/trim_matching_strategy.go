@@ -33,7 +33,7 @@ func TrimMatchingStrategy(ctx context.Context, dealerPublished bool) {
 	}
 
 	for _, car := range cars {
-		time.Sleep(5 * time.Second)
+		time.Sleep(2 * time.Second)
 		log.Println("Car: " + car.Id)
 
 		createCarInput := formatCreateCarInput(countryVersion, category, car)
