@@ -86,7 +86,7 @@ func fixModelAndTrimName(model string, brand string, trim string, year int) (str
 
 	switch len(modelWords) {
 	case 1:
-		return model, "Base " + strconv.Itoa(year)
+		return model, "Base"
 	case 2:
 		return modelWords[0], modelWords[1]
 	default:

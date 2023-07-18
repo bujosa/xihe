@@ -3,7 +3,6 @@ package transformation
 import (
 	"context"
 	"log"
-	"strconv"
 	"strings"
 	"time"
 
@@ -77,7 +76,7 @@ func transformModelName(model string, brand string, trim string, year int) (stri
 	}
 
 	if brand == "Kia" && len(modelWords) == 1 {
-		return strings.Replace(model, "-", "", 1), "Base " + strconv.Itoa(year)
+		return strings.Replace(model, "-", "", 1), "Base"
 	}
 
 	if brand == "Volkswagen" && modelWords[0] == "T-" {
@@ -85,14 +84,14 @@ func transformModelName(model string, brand string, trim string, year int) (stri
 		if len(modelWords) > 2 {
 			trimName = strings.Join(modelWords[2:], " ")
 		} else {
-			trimName = "Base " + strconv.Itoa(year)
+			trimName = "Base"
 		}
 		return "T-" + modelWords[1], trimName
 	}
 
 	switch len(modelWords) {
 	case 1:
-		return model, "Base " + strconv.Itoa(year)
+		return model, "Base"
 	case 2:
 		return modelWords[0], modelWords[1]
 	case 3:
